@@ -108,8 +108,17 @@ or `.otc`.
 
 ## Reproducible output
 
-The same inputs always give the same PDF. The document's date,
-`datetime.today()` included, is January 1, 1970.
+The same inputs always give the same PDF. The clock is not one of them:
+the day a document says it was made, in the PDF and as
+`datetime.today()`, is January 1, 1970 unless the rule names another:
+
+```starlark
+typst_document(
+    name = "letter",
+    main = "letter.typ",
+    date = "2026-11-21",
+)
+```
 
 ## Working on the rules
 

@@ -11,6 +11,20 @@ def _root_path(ctx, file):
         path = path.split("/", 2)[2]
     return path
 
+def _seconds(ctx):
+    """The document's date, as seconds since 1970, which is how Typst takes it."""
+    parts = ctx.attr.date.split("-")
+    if [len(part) for part in parts] != [4, 2, 2] or not "".join(parts).isdigit():
+        fail("date {} of {} is not a YYYY-MM-DD".format(repr(ctx.attr.date), ctx.label))
+    year, month, day = [int(part) for part in parts]
+
+    # Days since 1970 by counting from March 1, so that a leap day is the
+    # last day of its year.
+    year -= 1 if month <= 2 else 0
+    day_of_year = (153 * (month + (-3 if month > 2 else 9)) + 2) // 5 + day - 1
+    days = year * 365 + year // 4 - year // 100 + year // 400 + day_of_year - 719468
+    return days * 86400
+
 def _typst_document_impl(ctx):
     typst = ctx.toolchains["//typst:toolchain_type"].typst
     name = ctx.label.name
@@ -49,7 +63,7 @@ def _typst_document_impl(ctx):
     args.add("compile")
     args.add("--root", root)
     args.add("--ignore-system-fonts")
-    args.add("--creation-timestamp", "0")
+    args.add("--creation-timestamp", str(_seconds(ctx)))
 
     # Neither directory exists, so no package is found, on the host or here.
     args.add("--package-path", beside + ".packages")
@@ -99,6 +113,11 @@ typst_document = rule(
         ),
         "inputs": attr.string_dict(
             doc = "Strings the document reads as sys.inputs.",
+        ),
+        "date": attr.string(
+            doc = "The day the document says it was made, as YYYY-MM-DD: " +
+                  "the date in the PDF, and datetime.today().",
+            default = "1970-01-01",
         ),
         "fonts": attr.label_list(
             doc = "Font files the document may use, besides the fonts " +

@@ -1,0 +1,30 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//typst:defs.bzl", "typst_document")
+
+# A day with no date given, days either side of a leap day, and the ends
+# of a year.
+DATES = {
+    "epoch": None,
+    "leap_day": "2024-02-29",
+    "after_leap_day": "2024-03-01",
+    "new_year": "2026-01-01",
+    "new_years_eve": "2099-12-31",
+    "century": "2000-02-29",
+}
+
+[typst_document(
+    name = name,
+    date = date,
+    main = "today.typ",
+) for name, date in DATES.items()]
+
+[sh_test(
+    name = name + "_test",
+    size = "small",
+    srcs = ["//tests:pdf_has_test.sh"],
+    args = [
+        "$(rootpath %s)" % name,
+        "'/Title(%s)'" % (date or "1970-01-01"),
+    ],
+    data = [name],
+) for name, date in DATES.items()]
