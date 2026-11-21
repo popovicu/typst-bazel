@@ -1,0 +1,29 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//typst:defs.bzl", "typst_document")
+
+genrule(
+    name = "made",
+    outs = ["made.json"],
+    cmd = "echo '{\"by\": \"a genrule\"}' > $@",
+)
+
+typst_document(
+    name = "hello",
+    srcs = [
+        "made.json",
+        "parts/part.typ",
+        "//tests/shared:shout.typ",
+    ],
+    main = "hello.typ",
+)
+
+sh_test(
+    name = "hello_test",
+    size = "small",
+    srcs = ["//tests:pdf_title_test.sh"],
+    args = [
+        "$(rootpath hello)",
+        "'PART! a genrule'",
+    ],
+    data = ["hello"],
+)
