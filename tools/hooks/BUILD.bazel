@@ -1,0 +1,9 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+sh_test(
+    name = "pre-commit_test",
+    size = "small",
+    srcs = ["pre-commit_test.sh"],
+    args = ["$(rootpath pre-commit)"],
+    data = ["pre-commit"],
+)

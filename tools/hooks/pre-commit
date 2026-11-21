@@ -1,0 +1,19 @@
+#!/bin/sh
+# Rejects a commit whose staged diff is too large to review comfortably.
+#
+# Counts added + deleted lines across staged files, skipping goldens
+# (anything under a testdata/ directory) and lockfiles. Binary files
+# don't count. Override the limit with RULES_TYPST_COMMIT_LIMIT.
+
+limit=${RULES_TYPST_COMMIT_LIMIT:-200}
+
+total=$(git diff --cached --numstat -- . \
+    ':(exclude,glob)**/testdata/**' \
+    ':(exclude,glob)**/*.lock' \
+    | awk '$1 != "-" { s += $1 + $2 } END { print s + 0 }')
+
+if [ "$total" -gt "$limit" ]; then
+    echo "pre-commit: $total changed lines (limit $limit, goldens and lockfiles excluded)." >&2
+    echo "pre-commit: split this into smaller commits." >&2
+    exit 1
+fi
