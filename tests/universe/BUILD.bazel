@@ -14,7 +14,7 @@ typst_document(
 sh_test(
     name = "formats_test",
     size = "small",
-    srcs = ["//tests:pdf_has_test.sh"],
+    srcs = ["//tests:contains_test.sh"],
     args = [
         "$(rootpath formats)",
         "'/Title(formatted from Universe)'",
@@ -31,7 +31,7 @@ typst_document(
 sh_test(
     name = "diagram_test",
     size = "small",
-    srcs = ["//tests:pdf_has_test.sh"],
+    srcs = ["//tests:contains_test.sh"],
     args = [
         "$(rootpath diagram)",
         "'/Title(Drawn)'",

@@ -10,7 +10,7 @@ typst_document(
 sh_test(
     name = "greets_test",
     size = "small",
-    srcs = ["//tests:pdf_has_test.sh"],
+    srcs = ["//tests:contains_test.sh"],
     args = [
         "$(rootpath greets)",
         "'/Title(hello world)'",
@@ -27,7 +27,7 @@ typst_document(
 sh_test(
     name = "asks_test",
     size = "small",
-    srcs = ["//tests:pdf_has_test.sh"],
+    srcs = ["//tests:contains_test.sh"],
     args = [
         "$(rootpath asks)",
         "'/Title(hello world, please)'",
@@ -44,7 +44,7 @@ typst_document(
 sh_test(
     name = "letter_test",
     size = "small",
-    srcs = ["//tests:pdf_has_test.sh"],
+    srcs = ["//tests:contains_test.sh"],
     args = [
         "$(rootpath letter)",
         "'/Title(hello from the letterhead)'",

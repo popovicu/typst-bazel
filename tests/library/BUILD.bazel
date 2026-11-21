@@ -10,7 +10,7 @@ typst_document(
 sh_test(
     name = "themed_test",
     size = "small",
-    srcs = ["//tests:pdf_has_test.sh"],
+    srcs = ["//tests:contains_test.sh"],
     args = [
         "$(rootpath themed)",
         "'/Title(teal on base)'",

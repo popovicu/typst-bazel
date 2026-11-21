@@ -10,7 +10,7 @@ typst_document(
 sh_test(
     name = "fira_test",
     size = "small",
-    srcs = ["//tests:pdf_has_test.sh"],
+    srcs = ["//tests:contains_test.sh"],
     args = [
         "$(rootpath fira)",
         "+FiraMono-Regular",
@@ -27,7 +27,7 @@ typst_document(
 sh_test(
     name = "borrowed_test",
     size = "small",
-    srcs = ["//tests:pdf_has_test.sh"],
+    srcs = ["//tests:contains_test.sh"],
     args = [
         "$(rootpath borrowed)",
         "+FiraMono-Regular",

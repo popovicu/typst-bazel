@@ -1,5 +1,5 @@
 #!/bin/sh
-# Expects a PDF to contain some bytes: pdf_has_test.sh <pdf> <text>.
+# Expects a file to contain some bytes: contains_test.sh <file> <text>.
 #
 # A PDF's text is compressed, but its title and the names of its fonts
 # are not: "/Title(...)" and "+FontName". So tests have their documents

@@ -21,7 +21,7 @@ DATES = {
 [sh_test(
     name = name + "_test",
     size = "small",
-    srcs = ["//tests:pdf_has_test.sh"],
+    srcs = ["//tests:contains_test.sh"],
     args = [
         "$(rootpath %s)" % name,
         "'/Title(%s)'" % (date or "1970-01-01"),

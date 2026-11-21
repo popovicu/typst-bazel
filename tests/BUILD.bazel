@@ -1,1 +1,1 @@
-exports_files(["pdf_has_test.sh"])
+exports_files(["contains_test.sh"])

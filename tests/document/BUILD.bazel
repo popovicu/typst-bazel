@@ -20,7 +20,7 @@ typst_document(
 sh_test(
     name = "hello_test",
     size = "small",
-    srcs = ["//tests:pdf_has_test.sh"],
+    srcs = ["//tests:contains_test.sh"],
     args = [
         "$(rootpath hello)",
         "'/Title(PART! a genrule)'",
