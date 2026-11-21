@@ -1,6 +1,14 @@
+load("//typst/private:resolved.bzl", "resolved_typst")
+
 # Resolves to the Typst that compiles documents, for the machine that
 # runs the build.
 toolchain_type(
     name = "toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+# The Typst of the build, to run by hand: bazel run //typst -- fonts
+resolved_typst(
+    name = "typst",
     visibility = ["//visibility:public"],
 )
