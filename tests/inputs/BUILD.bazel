@@ -1,0 +1,30 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//typst:defs.bzl", "typst_document")
+
+typst_document(
+    name = "full",
+    main = "variant.typ",
+)
+
+typst_document(
+    name = "short",
+    inputs = {
+        "note": "a=b, with spaces",
+        "variant": "short",
+    },
+    main = "variant.typ",
+)
+
+[sh_test(
+    name = name + "_test",
+    size = "small",
+    srcs = ["//tests:pdf_has_test.sh"],
+    args = [
+        "$(rootpath %s)" % name,
+        "'/Title(%s)'" % title,
+    ],
+    data = [name],
+) for name, title in [
+    ("full", "full "),
+    ("short", "short a=b, with spaces"),
+]]

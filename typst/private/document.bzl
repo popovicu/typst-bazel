@@ -56,6 +56,10 @@ def _typst_document_impl(ctx):
     args.add("--package-cache-path", beside + ".packages")
     if fonts:
         args.add("--font-path", beside + ".fonts")
+    for key, value in ctx.attr.inputs.items():
+        if "=" in key:
+            fail("input {} of {} has = in its name".format(repr(key), ctx.label))
+        args.add("--input", "{}={}".format(key, value))
     args.add("-")
     args.add(pdf)
     ctx.actions.run_shell(
@@ -92,6 +96,9 @@ typst_document = rule(
         "deps": attr.label_list(
             doc = "Libraries the document reads from.",
             providers = [TypstLibraryInfo],
+        ),
+        "inputs": attr.string_dict(
+            doc = "Strings the document reads as sys.inputs.",
         ),
         "fonts": attr.label_list(
             doc = "Font files the document may use, besides the fonts " +

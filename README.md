@@ -70,6 +70,23 @@ typst_library(
 A document names it in `deps` and reads its files by path, as it reads
 its own `srcs`.
 
+## Inputs
+
+One source can make several documents. `inputs` are strings the document
+reads from `sys.inputs`:
+
+```starlark
+typst_document(
+    name = "resume_short",
+    main = "resume.typ",
+    inputs = {"variant": "short"},
+)
+```
+
+```typst
+#let short = sys.inputs.at("variant", default: "full") == "short"
+```
+
 ## Fonts
 
 Fonts installed on the machine are never used. A document has the four
