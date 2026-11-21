@@ -20,6 +20,15 @@ wants the real source tree, not a tree of symlinks made for one action.
 A `bazel run` target could start it at the top of the repository with
 the document's fonts and packages.
 
+## Comparing with the rules in the registry
+
+The Bazel Central Registry has a `rules_typst` already, from
+`periareon/rules_typst`. Once these rules do what we want of them, set
+the two side by side: what each can build, what each needs on the
+machine and in the build, how each pins Typst and packages, and how
+they behave on the same documents. This module also shares that one's
+name, which matters the day it is published.
+
 # Provisional decisions
 
 Each says what we do today, why it is good enough, and what would make us
