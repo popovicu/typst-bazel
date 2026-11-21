@@ -5,9 +5,9 @@ Typst that Bazel downloads, from inputs Bazel knows about.
 
 > [!WARNING]
 > rules_typst is being built. This file describes what works today:
-> Bazel downloads Typst and compiles a document to PDF from files in
-> one repository, with fonts from anywhere, packages you wrote, and
-packages from Typst Universe.
+> Bazel downloads Typst and compiles a document from files in one
+> repository, with fonts from anywhere, packages you wrote, and packages
+> from Typst Universe. It has run on macOS only.
 
 ## Choosing a Typst
 
@@ -164,10 +164,27 @@ gets them. They can come from any repository, an `http_archive` of a font's rele
 for one. Typst tells fonts by their extension: `.ttf`, `.otf`, `.ttc`
 or `.otc`.
 
+## Other formats
+
+`format` chooses what is written: `"pdf"` unless given, or `"html"`,
+`"svg"` or `"png"`, as `<name>.html` and so on.
+
+```starlark
+typst_document(
+    name = "figure",
+    main = "figure.typ",
+    format = "svg",
+)
+```
+
+An SVG or a PNG is one page, and Typst refuses a document that has more.
+Typst calls its HTML export unfinished, and warns so on every build.
+
 ## Reproducible output
 
-The same inputs always give the same PDF. The clock is not one of them:
-the day a document says it was made, in the PDF and as
+The same inputs always give the same output. The clock is not one of
+them:
+the day a document says it was made, in a PDF and as
 `datetime.today()`, is January 1, 1970 unless the rule names another:
 
 ```starlark

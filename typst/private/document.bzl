@@ -71,7 +71,7 @@ def _typst_document_impl(ctx):
     stub = ctx.actions.declare_file(name + ".stub.typ")
     ctx.actions.write(stub, '#include "/{}"\n'.format(main))
 
-    pdf = ctx.actions.declare_file(name + ".pdf")
+    output = ctx.actions.declare_file("{}.{}".format(name, ctx.attr.format))
     args = ctx.actions.args()
     args.add_all([typst, stub])
     args.add("compile")
@@ -88,14 +88,18 @@ def _typst_document_impl(ctx):
         if "=" in key:
             fail("input {} of {} has = in its name".format(repr(key), ctx.label))
         args.add("--input", "{}={}".format(key, value))
+    args.add("--format", ctx.attr.format)
+    if ctx.attr.format == "html":
+        # Typst calls its HTML unfinished, and says so on every build.
+        args.add("--features", "html")
     args.add("-")
-    args.add(pdf)
+    args.add(output)
     ctx.actions.run_shell(
         command = 'typst="$1"; stub="$2"; shift 2; exec "$typst" "$@" < "$stub"',
         arguments = [args],
         inputs = staged.values() + fonts + packages.values() + [stub],
         tools = [typst],
-        outputs = [pdf],
+        outputs = [output],
         mnemonic = "TypstCompile",
         progress_message = "Compiling %{label}",
         toolchain = "//typst:toolchain_type",
@@ -104,11 +108,11 @@ def _typst_document_impl(ctx):
         execution_requirements = {"block-network": "1"},
         env = {"ALL_PROXY": "http://127.0.0.1:1"},
     )
-    return [DefaultInfo(files = depset([pdf]))]
+    return [DefaultInfo(files = depset([output]))]
 
 typst_document = rule(
     implementation = _typst_document_impl,
-    doc = "Compiles a Typst document to <name>.pdf.",
+    doc = "Compiles a Typst document to <name>.pdf, or to another format.",
     attrs = {
         "main": attr.label(
             doc = "The file Typst compiles.",
@@ -125,6 +129,12 @@ typst_document = rule(
             doc = "Libraries the document reads from, and packages it " +
                   "imports.",
             providers = [[TypstLibraryInfo], [TypstPackageInfo]],
+        ),
+        "format": attr.string(
+            doc = "What to write, as <name>.<format>. A png or an svg " +
+                  "is one page, so the document must have only one.",
+            default = "pdf",
+            values = ["pdf", "html", "svg", "png"],
         ),
         "inputs": attr.string_dict(
             doc = "Strings the document reads as sys.inputs.",

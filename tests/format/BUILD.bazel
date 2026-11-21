@@ -1,0 +1,27 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//typst:defs.bzl", "typst_document")
+
+# Each format, and something only a file of that format contains.
+FORMATS = {
+    "html": "<title>One page</title>",
+    "pdf": "/Title(One page)",
+    "png": "IHDR",
+    "svg": "<svg",
+}
+
+[typst_document(
+    name = "page_" + format,
+    format = format,
+    main = "page.typ",
+) for format in FORMATS]
+
+[sh_test(
+    name = format + "_test",
+    size = "small",
+    srcs = ["//tests:contains_test.sh"],
+    args = [
+        "$(rootpath page_%s)" % format,
+        "'%s'" % text,
+    ],
+    data = ["page_" + format],
+) for format, text in FORMATS.items()]
