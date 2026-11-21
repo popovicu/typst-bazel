@@ -1,1 +1,4 @@
-exports_files(["contains_test.sh"])
+exports_files(
+    ["contains_test.sh"],
+    visibility = ["//:__subpackages__"],
+)

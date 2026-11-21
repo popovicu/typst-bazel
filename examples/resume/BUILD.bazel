@@ -1,0 +1,33 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//typst:defs.bzl", "typst_document", "typst_library")
+
+# The look, with the font it sets dates in. Any resume could use it.
+typst_library(
+    name = "style",
+    srcs = ["style.typ"],
+    fonts = ["@fira_mono//file"],
+)
+
+typst_document(
+    name = "resume",
+    date = "2026-11-21",
+    main = "resume.typ",
+    deps = [":style"],
+)
+
+[sh_test(
+    name = "resume_%s_test" % what,
+    size = "small",
+    srcs = ["//tests:contains_test.sh"],
+    args = [
+        "$(rootpath resume)",
+        "'%s'" % text,
+    ],
+    data = ["resume"],
+) for what, text in {
+    "title": "/Title(Resume - Ada Example)",
+    "variant": "/Keywords(full)",
+    "outline": "/Title(Projects)",
+    "font": "+FiraMono-Regular",
+    "date": "/CreationDate(D:20261121",
+}.items()]
