@@ -1,5 +1,6 @@
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//typst:defs.bzl", "typst_document")
+load(":imports_test.bzl", "imports_test")
 
 exports_files(["typst.lock.json"])
 
@@ -35,4 +36,9 @@ sh_test(
         "'/Title(Drawn)'",
     ],
     data = ["diagram"],
+)
+
+imports_test(
+    name = "imports_test",
+    size = "small",
 )
