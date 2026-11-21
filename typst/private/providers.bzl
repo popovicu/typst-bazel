@@ -8,3 +8,14 @@ TypstLibraryInfo = provider(
         "fonts": "depset of File: the font files those need.",
     },
 )
+
+TypstPackageInfo = provider(
+    doc = "Packages a document imports as @namespace/name:version.",
+    fields = {
+        "packages": "depset of struct: the package and those it imports. " +
+                    "Each has spec, the directory Typst looks for it in, " +
+                    "as namespace/name/version; files, a depset of File; " +
+                    "and prefix, what to take off a file's short_path " +
+                    "for its path in the package.",
+    },
+)

@@ -1,6 +1,6 @@
 """The rule that compiles a document."""
 
-load(":providers.bzl", "TypstLibraryInfo")
+load(":providers.bzl", "TypstLibraryInfo", "TypstPackageInfo")
 
 def _root_path(ctx, file):
     """Where a file sits under the project root: its path in the repository."""
@@ -32,8 +32,8 @@ def _typst_document_impl(ctx):
     # The project root: every file at its path in the repository, sources
     # and generated files alike, because Typst reads from one tree only.
     staged = {}
-    libraries = depset(transitive = [dep[TypstLibraryInfo].files for dep in ctx.attr.deps])
-    for file in depset([ctx.file.main] + ctx.files.srcs, transitive = [libraries]).to_list():
+    libraries = [dep[TypstLibraryInfo] for dep in ctx.attr.deps if TypstLibraryInfo in dep]
+    for file in depset([ctx.file.main] + ctx.files.srcs, transitive = [library.files for library in libraries]).to_list():
         path = _root_path(ctx, file)
         staged[path] = ctx.actions.declare_file("{}.root/{}".format(name, path))
         ctx.actions.symlink(output = staged[path], target_file = file)
@@ -45,11 +45,25 @@ def _typst_document_impl(ctx):
     fonts = []
     for file in depset(
         ctx.files.fonts,
-        transitive = [dep[TypstLibraryInfo].fonts for dep in ctx.attr.deps],
+        transitive = [library.fonts for library in libraries],
     ).to_list():
         path = "{}.fonts/{}".format(name, file.short_path.removeprefix("../"))
         fonts.append(ctx.actions.declare_file(path))
         ctx.actions.symlink(output = fonts[-1], target_file = file)
+
+    # And packages, where Typst looks for them: namespace/name/version.
+    packages = {}
+    for package in depset(transitive = [
+        dep[TypstPackageInfo].packages
+        for dep in ctx.attr.deps
+        if TypstPackageInfo in dep
+    ]).to_list():
+        for file in package.files.to_list():
+            path = "{}/{}".format(package.spec, file.short_path.removeprefix(package.prefix))
+            if path in packages:
+                fail("{} gets @{} from two targets".format(ctx.label, package.spec))
+            packages[path] = ctx.actions.declare_file("{}.packages/{}".format(name, path))
+            ctx.actions.symlink(output = packages[path], target_file = file)
 
     # Typst refuses a main file that is a symlink out of the root, and
     # Bazel hands an action nothing but symlinks. So the main file is this
@@ -65,7 +79,7 @@ def _typst_document_impl(ctx):
     args.add("--ignore-system-fonts")
     args.add("--creation-timestamp", str(_seconds(ctx)))
 
-    # Neither directory exists, so no package is found, on the host or here.
+    # Both of the places Typst looks, so that it never looks on the host.
     args.add("--package-path", beside + ".packages")
     args.add("--package-cache-path", beside + ".packages")
     if fonts:
@@ -79,7 +93,7 @@ def _typst_document_impl(ctx):
     ctx.actions.run_shell(
         command = 'typst="$1"; stub="$2"; shift 2; exec "$typst" "$@" < "$stub"',
         arguments = [args],
-        inputs = staged.values() + fonts + [stub],
+        inputs = staged.values() + fonts + packages.values() + [stub],
         tools = [typst],
         outputs = [pdf],
         mnemonic = "TypstCompile",
@@ -108,8 +122,9 @@ typst_document = rule(
             allow_files = True,
         ),
         "deps": attr.label_list(
-            doc = "Libraries the document reads from.",
-            providers = [TypstLibraryInfo],
+            doc = "Libraries the document reads from, and packages it " +
+                  "imports.",
+            providers = [[TypstLibraryInfo], [TypstPackageInfo]],
         ),
         "inputs": attr.string_dict(
             doc = "Strings the document reads as sys.inputs.",

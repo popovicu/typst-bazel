@@ -1,0 +1,19 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//typst:defs.bzl", "typst_document")
+
+typst_document(
+    name = "greets",
+    main = "greets.typ",
+    deps = ["//tests/package/greet"],
+)
+
+sh_test(
+    name = "greets_test",
+    size = "small",
+    srcs = ["//tests:pdf_has_test.sh"],
+    args = [
+        "$(rootpath greets)",
+        "'/Title(hello world)'",
+    ],
+    data = ["greets"],
+)

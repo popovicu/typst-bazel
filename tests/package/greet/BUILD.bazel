@@ -1,0 +1,9 @@
+load("//typst:defs.bzl", "typst_package")
+
+typst_package(
+    name = "greet",
+    srcs = ["lib.typ"],
+    manifest = "typst.toml",
+    version = "0.1.0",
+    visibility = ["//tests/package:__subpackages__"],
+)

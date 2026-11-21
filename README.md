@@ -6,8 +6,8 @@ Typst that Bazel downloads, from inputs Bazel knows about.
 > [!WARNING]
 > rules_typst is being built. This file describes what works today:
 > Bazel downloads Typst and compiles a document to PDF from files in
-> one repository, with fonts from anywhere. Packages are not supported
-yet.
+> one repository, with fonts from anywhere and packages you wrote.
+Packages from Typst Universe are not supported yet.
 
 ## Choosing a Typst
 
@@ -69,6 +69,33 @@ typst_library(
 
 A document names it in `deps` and reads its files by path, as it reads
 its own `srcs`.
+
+## Packages
+
+A package is a directory with a `typst.toml`, imported by name from
+anywhere, another repository included:
+
+```starlark
+load("@rules_typst//typst:defs.bzl", "typst_package")
+
+typst_package(
+    name = "house-style",
+    manifest = "typst.toml",
+    srcs = glob(["src/**"]),
+    namespace = "acme",
+    version = "1.2.0",
+    deps = ["//packages/colors"],  # packages this one imports
+)
+```
+
+```typst
+#import "@acme/house-style:1.2.0": letter
+```
+
+A document names the package in `deps`. The name, the
+version and the namespace (`local` if not given) say where Typst finds
+the package; the name and the version must be the ones in `typst.toml`,
+and Typst says so if they are not.
 
 ## Inputs
 
