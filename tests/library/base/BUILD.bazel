@@ -1,0 +1,7 @@
+load("//typst:defs.bzl", "typst_library")
+
+typst_library(
+    name = "base",
+    srcs = ["base.typ"],
+    visibility = ["//tests/library:__subpackages__"],
+)

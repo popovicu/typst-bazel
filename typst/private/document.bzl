@@ -1,5 +1,7 @@
 """The rule that compiles a document."""
 
+load(":providers.bzl", "TypstLibraryInfo")
+
 def _root_path(ctx, file):
     """Where a file sits under the project root: its path in the repository."""
     if file.owner.repo_name != ctx.label.repo_name:
@@ -15,13 +17,14 @@ def _typst_document_impl(ctx):
 
     # The project root: every file at its path in the repository, sources
     # and generated files alike, because Typst reads from one tree only.
-    staged = []
-    for file in [ctx.file.main] + ctx.files.srcs:
-        link = ctx.actions.declare_file("{}.root/{}".format(name, _root_path(ctx, file)))
-        ctx.actions.symlink(output = link, target_file = file)
-        staged.append(link)
+    staged = {}
+    libraries = depset(transitive = [dep[TypstLibraryInfo].files for dep in ctx.attr.deps])
+    for file in depset([ctx.file.main] + ctx.files.srcs, transitive = [libraries]).to_list():
+        path = _root_path(ctx, file)
+        staged[path] = ctx.actions.declare_file("{}.root/{}".format(name, path))
+        ctx.actions.symlink(output = staged[path], target_file = file)
     main = _root_path(ctx, ctx.file.main)
-    root = staged[0].path.removesuffix("/" + main)
+    root = staged[main].path.removesuffix("/" + main)
 
     # Typst refuses a main file that is a symlink out of the root, and
     # Bazel hands an action nothing but symlinks. So the main file is this
@@ -45,7 +48,7 @@ def _typst_document_impl(ctx):
     ctx.actions.run_shell(
         command = 'typst="$1"; stub="$2"; shift 2; exec "$typst" "$@" < "$stub"',
         arguments = [args],
-        inputs = staged + [stub],
+        inputs = staged.values() + [stub],
         tools = [typst],
         outputs = [pdf],
         mnemonic = "TypstCompile",
@@ -72,6 +75,10 @@ typst_document = rule(
                   "imports and includes, images, data. Each sits where it " +
                   "is in the repository, so /a/b.typ is //a:b.typ.",
             allow_files = True,
+        ),
+        "deps": attr.label_list(
+            doc = "Libraries the document reads from.",
+            providers = [TypstLibraryInfo],
         ),
     },
     toolchains = ["//typst:toolchain_type"],

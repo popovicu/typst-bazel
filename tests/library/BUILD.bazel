@@ -1,0 +1,19 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//typst:defs.bzl", "typst_document")
+
+typst_document(
+    name = "themed",
+    main = "themed.typ",
+    deps = ["//tests/library/theme"],
+)
+
+sh_test(
+    name = "themed_test",
+    size = "small",
+    srcs = ["//tests:pdf_title_test.sh"],
+    args = [
+        "$(rootpath themed)",
+        "'teal on base'",
+    ],
+    data = ["themed"],
+)

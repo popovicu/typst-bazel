@@ -1,0 +1,11 @@
+load("//typst:defs.bzl", "typst_library")
+
+typst_library(
+    name = "theme",
+    srcs = [
+        "colors.json",
+        "theme.typ",
+    ],
+    visibility = ["//tests/library:__pkg__"],
+    deps = ["//tests/library/base"],
+)
