@@ -1,0 +1,8 @@
+load("//typst:defs.bzl", "typst_library")
+
+typst_library(
+    name = "mono",
+    srcs = ["mono.typ"],
+    fonts = ["@fira_mono//file"],
+    visibility = ["//tests/fonts:__pkg__"],
+)

@@ -84,9 +84,10 @@ typst_document(
 )
 ```
 
-They can come from any repository, an `http_archive` of a font's release
-for one. Typst tells fonts by their extension: `.ttf`, `.otf`, `.ttc` or
-`.otc`.
+A library names fonts the same way, and a document that depends on it
+gets them. They can come from any repository, an `http_archive` of a font's release
+for one. Typst tells fonts by their extension: `.ttf`, `.otf`, `.ttc`
+or `.otc`.
 
 ## Reproducible output
 

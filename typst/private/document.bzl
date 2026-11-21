@@ -29,7 +29,10 @@ def _typst_document_impl(ctx):
 
     # Fonts get a tree too, so that Typst finds these and no others.
     fonts = []
-    for file in ctx.files.fonts:
+    for file in depset(
+        ctx.files.fonts,
+        transitive = [dep[TypstLibraryInfo].fonts for dep in ctx.attr.deps],
+    ).to_list():
         path = "{}.fonts/{}".format(name, file.short_path.removeprefix("../"))
         fonts.append(ctx.actions.declare_file(path))
         ctx.actions.symlink(output = fonts[-1], target_file = file)

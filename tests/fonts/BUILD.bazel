@@ -17,3 +17,20 @@ sh_test(
     ],
     data = ["fira"],
 )
+
+typst_document(
+    name = "borrowed",
+    main = "borrowed.typ",
+    deps = ["//tests/fonts/mono"],
+)
+
+sh_test(
+    name = "borrowed_test",
+    size = "small",
+    srcs = ["//tests:pdf_has_test.sh"],
+    args = [
+        "$(rootpath borrowed)",
+        "+FiraMono-Regular",
+    ],
+    data = ["borrowed"],
+)
