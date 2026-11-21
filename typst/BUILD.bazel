@@ -1,0 +1,6 @@
+# Resolves to the Typst that compiles documents, for the machine that
+# runs the build.
+toolchain_type(
+    name = "toolchain_type",
+    visibility = ["//visibility:public"],
+)

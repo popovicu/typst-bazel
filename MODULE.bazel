@@ -2,3 +2,13 @@ module(name = "rules_typst")
 
 bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "rules_shell", version = "0.6.1", dev_dependency = True)
+
+typst = use_extension("//typst:extensions.bzl", "typst")
+use_repo(typst, "typst_toolchains")
+
+register_toolchains("@typst_toolchains//:all")
+
+# The Typst this module's own tests compile with. A module that depends
+# on this one chooses its own.
+typst_dev = use_extension("//typst:extensions.bzl", "typst", dev_dependency = True)
+typst_dev.toolchain(version = "0.15.1")
