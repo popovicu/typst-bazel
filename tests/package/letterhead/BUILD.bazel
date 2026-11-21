@@ -1,0 +1,8 @@
+load("//typst:defs.bzl", "typst_library")
+
+typst_library(
+    name = "letterhead",
+    srcs = ["letterhead.typ"],
+    visibility = ["//tests/package:__pkg__"],
+    deps = ["//tests/package/greet"],
+)

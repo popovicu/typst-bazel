@@ -6,6 +6,8 @@ TypstLibraryInfo = provider(
         "files": "depset of File: the library's files and those of the " +
                  "libraries it depends on.",
         "fonts": "depset of File: the font files those need.",
+        "packages": "depset of struct: the packages those import, as in " +
+                    "TypstPackageInfo.",
     },
 )
 

@@ -92,7 +92,7 @@ typst_package(
 #import "@acme/house-style:1.2.0": letter
 ```
 
-A document names the package in `deps`. The name, the
+A document or a library names the package in `deps`. The name, the
 version and the namespace (`local` if not given) say where Typst finds
 the package; the name and the version must be the ones in `typst.toml`,
 and Typst says so if they are not.

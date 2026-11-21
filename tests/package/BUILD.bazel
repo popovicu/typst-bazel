@@ -34,3 +34,20 @@ sh_test(
     ],
     data = ["asks"],
 )
+
+typst_document(
+    name = "letter",
+    main = "letter.typ",
+    deps = ["//tests/package/letterhead"],
+)
+
+sh_test(
+    name = "letter_test",
+    size = "small",
+    srcs = ["//tests:pdf_has_test.sh"],
+    args = [
+        "$(rootpath letter)",
+        "'/Title(hello from the letterhead)'",
+    ],
+    data = ["letter"],
+)

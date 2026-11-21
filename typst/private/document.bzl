@@ -53,7 +53,7 @@ def _typst_document_impl(ctx):
 
     # And packages, where Typst looks for them: namespace/name/version.
     packages = {}
-    for package in depset(transitive = [
+    for package in depset(transitive = [library.packages for library in libraries] + [
         dep[TypstPackageInfo].packages
         for dep in ctx.attr.deps
         if TypstPackageInfo in dep

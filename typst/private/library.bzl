@@ -1,17 +1,20 @@
 """The rule that names files documents read by path."""
 
-load(":providers.bzl", "TypstLibraryInfo")
+load(":providers.bzl", "TypstLibraryInfo", "TypstPackageInfo")
 
 def _typst_library_impl(ctx):
-    files = depset(
-        ctx.files.srcs,
-        transitive = [dep[TypstLibraryInfo].files for dep in ctx.attr.deps],
-    )
-    fonts = depset(
-        ctx.files.fonts,
-        transitive = [dep[TypstLibraryInfo].fonts for dep in ctx.attr.deps],
-    )
-    return [DefaultInfo(files = files), TypstLibraryInfo(files = files, fonts = fonts)]
+    libraries = [dep[TypstLibraryInfo] for dep in ctx.attr.deps if TypstLibraryInfo in dep]
+    files = depset(ctx.files.srcs, transitive = [library.files for library in libraries])
+    fonts = depset(ctx.files.fonts, transitive = [library.fonts for library in libraries])
+    packages = depset(transitive = [library.packages for library in libraries] + [
+        dep[TypstPackageInfo].packages
+        for dep in ctx.attr.deps
+        if TypstPackageInfo in dep
+    ])
+    return [
+        DefaultInfo(files = files),
+        TypstLibraryInfo(files = files, fonts = fonts, packages = packages),
+    ]
 
 typst_library = rule(
     implementation = _typst_library_impl,
@@ -27,8 +30,9 @@ typst_library = rule(
             allow_files = [".ttf", ".otf", ".ttc", ".otc"],
         ),
         "deps": attr.label_list(
-            doc = "Libraries these files read from.",
-            providers = [TypstLibraryInfo],
+            doc = "Libraries these files read from, and packages they " +
+                  "import.",
+            providers = [[TypstLibraryInfo], [TypstPackageInfo]],
         ),
     },
 )
