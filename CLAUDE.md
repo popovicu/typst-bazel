@@ -32,6 +32,8 @@ Read `README.md` first.
 - Rules decide everything at analysis time and run Typst itself as the
   action. There is no wrapper program between Bazel and Typst.
 - `//tests` uses only the public surface, as another module would.
+- `//examples` is what a user would write, and is tested like the rest.
+  Nothing in it is about a real person.
 - Every change comes with tests.
 
 ## Tooling

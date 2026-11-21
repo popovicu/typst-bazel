@@ -31,3 +31,43 @@ typst_document(
     "font": "+FiraMono-Regular",
     "date": "/CreationDate(D:20261121",
 }.items()]
+
+# The same source, told to leave things out.
+typst_document(
+    name = "short",
+    date = "2026-11-21",
+    inputs = {"variant": "short"},
+    main = "resume.typ",
+    deps = [":style"],
+)
+
+sh_test(
+    name = "short_test",
+    size = "small",
+    srcs = ["//tests:contains_test.sh"],
+    args = [
+        "$(rootpath short)",
+        "'/Keywords(short)'",
+    ],
+    data = ["short"],
+)
+
+# And as a picture, which works because the resume is one page.
+typst_document(
+    name = "preview",
+    date = "2026-11-21",
+    format = "png",
+    main = "resume.typ",
+    deps = [":style"],
+)
+
+sh_test(
+    name = "preview_test",
+    size = "small",
+    srcs = ["//tests:contains_test.sh"],
+    args = [
+        "$(rootpath preview)",
+        "IHDR",
+    ],
+    data = ["preview"],
+)

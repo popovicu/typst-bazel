@@ -214,6 +214,16 @@ typst_document(
 )
 ```
 
+## An example
+
+`examples/resume` is a resume built three ways from one source: in
+full, in short, and as a picture. Its look is a library that brings its
+own font.
+
+```bash
+bazel build //examples/resume:all
+```
+
 ## Working on the rules
 
 ```bash
