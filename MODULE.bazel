@@ -14,6 +14,7 @@ typst_dev = use_extension("//typst:extensions.bzl", "typst", dev_dependency = Tr
 typst_dev.toolchain(version = "0.15.1")
 
 # Packages for tests.
+typst_dev.package(name = "fletcher", version = "0.6.0")
 typst_dev.package(name = "oxifmt", version = "1.0.0")
 typst_dev.lock(file = "//tests/universe:typst.lock.json")
 use_repo(typst_dev, "preview")

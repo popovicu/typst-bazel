@@ -1,4 +1,12 @@
 {
+    "cetz:0.5.3": {
+        "deps": ["oxifmt:1.0.0"],
+        "sha256": "79ca64869c60aefaf0eccc7e7371ab47cc6cb85bce1ad222e42cf1879c965b5f"
+    },
+    "fletcher:0.6.0": {
+        "deps": ["cetz:0.5.3"],
+        "sha256": "c6e2718bc14ad6d759f560ec75c99ea76466ac24cf213f6fdfabb56b96c8fe48"
+    },
     "oxifmt:1.0.0": {
         "deps": [],
         "sha256": "7d17a1fc8ad01740ec3cb2b03c7360a4225ff9318e5710765fa98ea6fd59594f"
