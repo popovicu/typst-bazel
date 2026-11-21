@@ -128,6 +128,24 @@ After that, Bazel downloads each archive once and checks it against its
 hash. Compiling never downloads: a package that is not in `deps` is an
 error.
 
+The lock file is never edited by hand. To add a package, change its
+version, or drop it, change the `typst.package` lines and run the same
+command again: it pins what is new, keeps the hashes it has, and removes
+what nothing asks for any more. Check both files in together.
+
+To have a test say when the two disagree, compare the lock file with the
+one the command would write:
+
+```starlark
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+
+diff_test(
+    name = "lock_test",
+    file1 = "typst.lock.json",
+    file2 = "@preview//:typst.lock.json",
+)
+```
+
 ## Inputs
 
 One source can make several documents. `inputs` are strings the document
