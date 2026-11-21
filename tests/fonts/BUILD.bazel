@@ -1,0 +1,19 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//typst:defs.bzl", "typst_document")
+
+typst_document(
+    name = "fira",
+    fonts = ["@fira_mono//file"],
+    main = "fira.typ",
+)
+
+sh_test(
+    name = "fira_test",
+    size = "small",
+    srcs = ["//tests:pdf_has_test.sh"],
+    args = [
+        "$(rootpath fira)",
+        "+FiraMono-Regular",
+    ],
+    data = ["fira"],
+)

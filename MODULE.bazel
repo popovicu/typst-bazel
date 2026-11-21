@@ -12,3 +12,14 @@ register_toolchains("@typst_toolchains//:all")
 # on this one chooses its own.
 typst_dev = use_extension("//typst:extensions.bzl", "typst", dev_dependency = True)
 typst_dev.toolchain(version = "0.15.1")
+
+http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+
+# A font for tests, under the SIL Open Font License.
+http_file(
+    name = "fira_mono",
+    dev_dependency = True,
+    downloaded_file_path = "FiraMono-Regular.ttf",
+    sha256 = "8c86f2963208a353c3435e28ecb38a99ab68f14d7433ba00c1822cef9a9c1b44",
+    url = "https://raw.githubusercontent.com/mozilla/Fira/4.202/ttf/FiraMono-Regular.ttf",
+)

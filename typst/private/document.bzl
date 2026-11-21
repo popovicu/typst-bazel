@@ -25,6 +25,14 @@ def _typst_document_impl(ctx):
         ctx.actions.symlink(output = staged[path], target_file = file)
     main = _root_path(ctx, ctx.file.main)
     root = staged[main].path.removesuffix("/" + main)
+    beside = root.removesuffix(".root")
+
+    # Fonts get a tree too, so that Typst finds these and no others.
+    fonts = []
+    for file in ctx.files.fonts:
+        path = "{}.fonts/{}".format(name, file.short_path.removeprefix("../"))
+        fonts.append(ctx.actions.declare_file(path))
+        ctx.actions.symlink(output = fonts[-1], target_file = file)
 
     # Typst refuses a main file that is a symlink out of the root, and
     # Bazel hands an action nothing but symlinks. So the main file is this
@@ -41,14 +49,16 @@ def _typst_document_impl(ctx):
     args.add("--creation-timestamp", "0")
 
     # Neither directory exists, so no package is found, on the host or here.
-    args.add("--package-path", root + ".packages")
-    args.add("--package-cache-path", root + ".packages")
+    args.add("--package-path", beside + ".packages")
+    args.add("--package-cache-path", beside + ".packages")
+    if fonts:
+        args.add("--font-path", beside + ".fonts")
     args.add("-")
     args.add(pdf)
     ctx.actions.run_shell(
         command = 'typst="$1"; stub="$2"; shift 2; exec "$typst" "$@" < "$stub"',
         arguments = [args],
-        inputs = staged.values() + [stub],
+        inputs = staged.values() + fonts + [stub],
         tools = [typst],
         outputs = [pdf],
         mnemonic = "TypstCompile",
@@ -79,6 +89,11 @@ typst_document = rule(
         "deps": attr.label_list(
             doc = "Libraries the document reads from.",
             providers = [TypstLibraryInfo],
+        ),
+        "fonts": attr.label_list(
+            doc = "Font files the document may use, besides the fonts " +
+                  "inside Typst. Fonts of the machine are never used.",
+            allow_files = [".ttf", ".otf", ".ttc", ".otc"],
         ),
     },
     toolchains = ["//typst:toolchain_type"],

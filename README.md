@@ -6,7 +6,8 @@ Typst that Bazel downloads, from inputs Bazel knows about.
 > [!WARNING]
 > rules_typst is being built. This file describes what works today:
 > Bazel downloads Typst and compiles a document to PDF from files in
-> one repository. Packages and fonts of your own are not supported yet.
+> one repository, with fonts from anywhere. Packages are not supported
+yet.
 
 ## Choosing a Typst
 
@@ -69,10 +70,28 @@ typst_library(
 A document names it in `deps` and reads its files by path, as it reads
 its own `srcs`.
 
-The same sources always give the same PDF: fonts installed on the machine
-are not used, only the four families inside Typst (Libertinus Serif, New
-Computer Modern and its math font, DejaVu Sans Mono), and the document's
-date, `datetime.today()` included, is January 1, 1970.
+## Fonts
+
+Fonts installed on the machine are never used. A document has the four
+families inside Typst (Libertinus Serif, New Computer Modern and its math
+font, DejaVu Sans Mono) and the font files it names:
+
+```starlark
+typst_document(
+    name = "report",
+    main = "report.typ",
+    fonts = ["@inter//:fonts", "fonts/Logo.otf"],
+)
+```
+
+They can come from any repository, an `http_archive` of a font's release
+for one. Typst tells fonts by their extension: `.ttf`, `.otf`, `.ttc` or
+`.otc`.
+
+## Reproducible output
+
+The same inputs always give the same PDF. The document's date,
+`datetime.today()` included, is January 1, 1970.
 
 ## Working on the rules
 
