@@ -104,3 +104,49 @@ drift apart unnoticed.
 Packages are symlinked into a tree per document, `<name>.packages`, as
 its files are, and Typst is pointed there for both of the places it
 looks, so packages installed on the machine are never seen.
+
+## Packages from Typst Universe are pinned in a file of ours
+
+Typst Universe serves an archive per package version, and nothing else a
+build could rely on: no hashes, and no list of what a package imports
+(a `typst.toml` has no place to say). The lock file records both. It is
+the module extension that reads it, and one repository, `@preview`,
+that holds every package in it as a `typst_package`.
+
+Why a file of our own and not Bazel's `MODULE.bazel.lock`: this one is
+short, sorted, and reads as what it is in review, a list of packages
+with their hashes. It also pins the same way whether or not Bazel's own
+lock file is checked in.
+
+Why one repository for all packages: `@preview//cetz:0.5.3` then reads
+as `@preview/cetz:0.5.3` does in Typst, and a package can depend on
+another by a label in the same repository.
+
+## What a package imports is read from its sources
+
+To pin a package, the extension downloads it and looks through its
+`.typ` files for strings that name a package, `"@preview/name:1.2.3"`,
+skipping lines that are comments. It does not parse Typst.
+
+Why: the only complete answer is in the sources, and parsing them
+properly takes Typst's own parser, which is a program to build. Reading
+too much is harmless: a package named in an example and never imported
+costs one download. A name that cannot be downloaded at all is taken for
+such an example and dropped, with a warning.
+
+This runs only for packages the lock file lacks. Once they are in the
+file, nothing is read and nothing is downloaded without a hash.
+
+## A lock file that lacks a package stops the build
+
+When the lock file is incomplete, every package target fails, saying
+which packages are not pinned and how to pin them. Only
+`bazel run @preview//:lock` works.
+
+Why not go on with the hashes just computed: the build would pass on
+whatever the network served that day, on every machine separately, and
+nothing would say so. Stopping costs one command, once per change to the
+packages.
+
+A module that is not the root must come with a complete lock file,
+because nobody building it can write one into it.

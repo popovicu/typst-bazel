@@ -35,6 +35,38 @@ macOS does. Windows needs the shell Bazel finds there to redirect
 standard input (`DESIGN.md`, "The main file is a stub on standard
 input").
 
+## Packages are pinned by the hash of the archive
+
+Today: the lock file holds the SHA-256 of each package's `.tar.gz`, as
+Typst Universe served it when the package was pinned.
+
+Good enough because: Universe builds its archives reproducibly now, and
+the ones tried have kept their bytes for months.
+
+Revisit when: a pinned package fails its hash and its contents have not
+changed. Universe rebuilds every archive when it deploys and promises
+nothing about their bytes; early in 2025 they did change. Likely answer:
+pin a hash of the unpacked files instead.
+
+## Packages are symlinked for each document
+
+Today: every file of every package a document imports gets a symlink
+action, in that document's own tree.
+
+Good enough because: symlink actions run no process, and a package is
+tens of files.
+
+Revisit when: analysis of many documents that share large packages is
+slow. Likely answer: point Typst at the `@preview` repository directly,
+which is already laid out by name and version, and keep the tree for
+packages of the repository.
+
+## Writing the lock file needs a shell
+
+Today: `bazel run @preview//:lock` is a shell script.
+
+Revisit when: someone pins packages on Windows.
+
 ## The date is written in the BUILD file
 
 Today: a document's date is the `date` attribute, 1970 if there is none.
