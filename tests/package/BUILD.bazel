@@ -17,3 +17,20 @@ sh_test(
     ],
     data = ["greets"],
 )
+
+typst_document(
+    name = "asks",
+    main = "asks.typ",
+    deps = ["//tests/package/polite"],
+)
+
+sh_test(
+    name = "asks_test",
+    size = "small",
+    srcs = ["//tests:pdf_has_test.sh"],
+    args = [
+        "$(rootpath asks)",
+        "'/Title(hello world, please)'",
+    ],
+    data = ["asks"],
+)

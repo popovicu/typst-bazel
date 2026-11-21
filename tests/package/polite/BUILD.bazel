@@ -1,0 +1,14 @@
+load("//typst:defs.bzl", "typst_package")
+
+typst_package(
+    name = "polite",
+    srcs = [
+        "src/lib.typ",
+        "words.json",
+    ],
+    manifest = "typst.toml",
+    namespace = "tests",
+    version = "1.2.3",
+    visibility = ["//tests/package:__pkg__"],
+    deps = ["//tests/package/greet"],
+)

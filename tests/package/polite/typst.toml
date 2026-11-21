@@ -1,0 +1,4 @@
+[package]
+name = "polite"
+version = "1.2.3"
+entrypoint = "src/lib.typ"
