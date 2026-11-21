@@ -6,8 +6,9 @@ Typst that Bazel downloads, from inputs Bazel knows about.
 > [!WARNING]
 > rules_typst is being built. This file describes what works today:
 > Bazel downloads Typst and compiles a document to PDF from files in
-> one repository, with fonts from anywhere and packages you wrote.
-Packages from Typst Universe are not supported yet.
+> one repository, with fonts from anywhere, packages you wrote, and
+packages from Typst Universe. The file that pins those is written by
+hand for now.
 
 ## Choosing a Typst
 
@@ -96,6 +97,37 @@ A document or a library names the package in `deps`. The name, the
 version and the namespace (`local` if not given) say where Typst finds
 the package; the name and the version must be the ones in `typst.toml`,
 and Typst says so if they are not.
+
+## Packages from Typst Universe
+
+In `MODULE.bazel`, name the packages documents import, and the file that
+pins them:
+
+```starlark
+typst.package(name = "fletcher", version = "0.6.0")
+typst.lock(file = "//:typst.lock.json")
+use_repo(typst, "preview")
+```
+
+`@preview/fletcher:0.6.0` in Typst is then `@preview//fletcher:0.6.0` in
+`deps`, and it brings the packages it imports itself.
+
+Typst Universe publishes no hashes and no list of what a package
+imports, so the lock file holds both, for each package named and each
+one those import:
+
+```json
+{
+    "fletcher:0.6.0": {
+        "deps": ["cetz:0.5.3"],
+        "sha256": "c6e2718bc14ad6d759f560ec75c99ea76466ac24cf213f6fdfabb56b96c8fe48"
+    },
+    ...
+}
+```
+
+Bazel downloads each archive once and checks it against its hash.
+Compiling never downloads: a package that is not in `deps` is an error.
 
 ## Inputs
 

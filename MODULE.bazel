@@ -13,6 +13,11 @@ register_toolchains("@typst_toolchains//:all")
 typst_dev = use_extension("//typst:extensions.bzl", "typst", dev_dependency = True)
 typst_dev.toolchain(version = "0.15.1")
 
+# Packages for tests.
+typst_dev.package(name = "oxifmt", version = "1.0.0")
+typst_dev.lock(file = "//tests/universe:typst.lock.json")
+use_repo(typst_dev, "preview")
+
 http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 
 # A font for tests, under the SIL Open Font License.
