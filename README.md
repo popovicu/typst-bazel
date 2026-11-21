@@ -178,6 +178,7 @@ typst_document(
 ```
 
 An SVG or a PNG is one page, and Typst refuses a document that has more.
+A PNG has 144 pixels to the inch, or as many as `ppi` says.
 Typst calls its HTML export unfinished, and warns so on every build.
 
 ## Reproducible output

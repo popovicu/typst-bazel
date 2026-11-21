@@ -25,3 +25,25 @@ FORMATS = {
     ],
     data = ["page_" + format],
 ) for format, text in FORMATS.items()]
+
+typst_document(
+    name = "page_coarse",
+    format = "png",
+    main = "page.typ",
+    ppi = 72,
+)
+
+# The page is 100 points wide, and a point is a 72nd of an inch.
+[sh_test(
+    name = name + "_width_test",
+    size = "small",
+    srcs = ["png_width_test.sh"],
+    args = [
+        "$(rootpath %s)" % name,
+        str(width),
+    ],
+    data = [name],
+) for name, width in [
+    ("page_png", 200),
+    ("page_coarse", 100),
+]]

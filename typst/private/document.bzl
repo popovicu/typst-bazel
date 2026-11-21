@@ -92,6 +92,8 @@ def _typst_document_impl(ctx):
     if ctx.attr.format == "html":
         # Typst calls its HTML unfinished, and says so on every build.
         args.add("--features", "html")
+    if ctx.attr.format == "png":
+        args.add("--ppi", str(ctx.attr.ppi))
     args.add("-")
     args.add(output)
     ctx.actions.run_shell(
@@ -135,6 +137,10 @@ typst_document = rule(
                   "is one page, so the document must have only one.",
             default = "pdf",
             values = ["pdf", "html", "svg", "png"],
+        ),
+        "ppi": attr.int(
+            doc = "Pixels per inch of a png.",
+            default = 144,
         ),
         "inputs": attr.string_dict(
             doc = "Strings the document reads as sys.inputs.",
