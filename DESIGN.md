@@ -86,3 +86,21 @@ sets a proxy nobody listens on, so the download fails where there is no
 sandbox too.
 
 Why: an input fetched during an action is one Bazel never hashed.
+
+## A package says its name twice
+
+Typst finds a package in a directory named for it,
+`namespace/name/version`, and reads the name and version again from the
+`typst.toml` inside. Bazel has to lay that directory out before any file
+is read, so `typst_package` takes the name and the version as
+attributes, beside a manifest that says the same.
+
+Why not write the manifest from the attributes: a package directory with
+a real `typst.toml` is one Typst and its editors understand without
+Bazel, and one that can be published as it is. Typst refuses a package
+whose manifest disagrees with where it was found, so the two cannot
+drift apart unnoticed.
+
+Packages are symlinked into a tree per document, `<name>.packages`, as
+its files are, and Typst is pointed there for both of the places it
+looks, so packages installed on the machine are never seen.
