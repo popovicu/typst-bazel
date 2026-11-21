@@ -1,3 +1,4 @@
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//typst:defs.bzl", "typst_document")
 load(":imports_test.bzl", "imports_test")
@@ -41,4 +42,12 @@ sh_test(
 imports_test(
     name = "imports_test",
     size = "small",
+)
+
+# The lock file is what bazel run @preview//:lock would write.
+diff_test(
+    name = "lock_test",
+    size = "small",
+    file1 = "typst.lock.json",
+    file2 = "@preview//:typst.lock.json",
 )

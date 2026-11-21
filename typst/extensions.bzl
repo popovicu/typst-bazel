@@ -1,7 +1,7 @@
 """The module extension that chooses the Typst a build compiles with."""
 
 load("//typst/private:repositories.bzl", "typst_release", "typst_toolchains")
-load("//typst/private:universe.bzl", "locked_packages", "typst_universe")
+load("//typst/private:universe.bzl", "resolve_packages", "typst_universe")
 load("//typst/private:versions.bzl", "VERSIONS")
 
 def _typst_impl(mctx):
@@ -24,8 +24,14 @@ def _typst_impl(mctx):
             releases[name] = triple
     typst_toolchains(name = "typst_toolchains", releases = releases)
 
-    packages, deps = locked_packages(mctx)
-    typst_universe(name = "preview", packages = packages, deps = deps)
+    resolved = resolve_packages(mctx)
+    typst_universe(
+        name = "preview",
+        packages = resolved.packages,
+        deps = resolved.deps,
+        lock_file = resolved.lock_file,
+        lock = resolved.lock,
+    )
     return mctx.extension_metadata(reproducible = True)
 
 typst = module_extension(
