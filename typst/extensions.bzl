@@ -29,10 +29,11 @@ def _typst_impl(mctx):
         name = "preview",
         packages = resolved.packages,
         deps = resolved.deps,
+        unlocked = resolved.unlocked,
         lock_file = resolved.lock_file,
         lock = resolved.lock,
     )
-    return mctx.extension_metadata(reproducible = True)
+    return mctx.extension_metadata(reproducible = not resolved.unlocked)
 
 typst = module_extension(
     implementation = _typst_impl,

@@ -7,8 +7,7 @@ Typst that Bazel downloads, from inputs Bazel knows about.
 > rules_typst is being built. This file describes what works today:
 > Bazel downloads Typst and compiles a document to PDF from files in
 > one repository, with fonts from anywhere, packages you wrote, and
-packages from Typst Universe. The file that pins those is written by
-hand for now.
+packages from Typst Universe.
 
 ## Choosing a Typst
 
@@ -114,20 +113,20 @@ use_repo(typst, "preview")
 
 Typst Universe publishes no hashes and no list of what a package
 imports, so the lock file holds both, for each package named and each
-one those import:
+one those import. It is written for you:
 
-```json
-{
-    "fletcher:0.6.0": {
-        "deps": ["cetz:0.5.3"],
-        "sha256": "c6e2718bc14ad6d759f560ec75c99ea76466ac24cf213f6fdfabb56b96c8fe48"
-    },
-    ...
-}
+```bash
+bazel run @preview//:lock
 ```
 
-Bazel downloads each archive once and checks it against its hash.
-Compiling never downloads: a package that is not in `deps` is an error.
+That downloads the packages the file lacks, reads their sources for the
+packages they import in turn, and writes the file, to be checked in.
+Until then, a document that needs a package does not build, and says to
+run this.
+
+After that, Bazel downloads each archive once and checks it against its
+hash. Compiling never downloads: a package that is not in `deps` is an
+error.
 
 ## Inputs
 

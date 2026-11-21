@@ -1,5 +1,20 @@
 """Rules for the repository of packages, about its lock file."""
 
+def _unlocked_package_impl(ctx):
+    fail("{} does not pin {}. To pin what it lacks: bazel run @preview//:lock".format(
+        ctx.attr.lock_file,
+        ", ".join(["@preview/" + spec for spec in ctx.attr.unlocked]),
+    ))
+
+unlocked_package = rule(
+    implementation = _unlocked_package_impl,
+    doc = "Stands in for every package while the lock file lacks some.",
+    attrs = {
+        "lock_file": attr.string(),
+        "unlocked": attr.string_list(),
+    },
+)
+
 _WRITE = """\
 #!/bin/sh
 set -eu
