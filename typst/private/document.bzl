@@ -71,7 +71,16 @@ def _typst_document_impl(ctx):
     stub = ctx.actions.declare_file(name + ".stub.typ")
     ctx.actions.write(stub, '#include "/{}"\n'.format(main))
 
-    output = ctx.actions.declare_file("{}.{}".format(name, ctx.attr.format))
+    if ctx.attr.file_per_page and ctx.attr.format not in ["png", "svg"]:
+        fail("{} is a {}, which is one file however many pages".format(ctx.label, ctx.attr.format))
+    if ctx.attr.file_per_page:
+        # How many pages is known only once Typst has run, so the output
+        # is a directory. Typst numbers the files: 1.png, or 01.png of 12.
+        output = ctx.actions.declare_directory(name + ".pages")
+        destination = "{}/{{0p}}.{}".format(output.path, ctx.attr.format)
+    else:
+        output = ctx.actions.declare_file("{}.{}".format(name, ctx.attr.format))
+        destination = output.path
     args = ctx.actions.args()
     args.add_all([typst, stub])
     args.add("compile")
@@ -95,7 +104,7 @@ def _typst_document_impl(ctx):
     if ctx.attr.format == "png":
         args.add("--ppi", str(ctx.attr.ppi))
     args.add("-")
-    args.add(output)
+    args.add(destination)
     ctx.actions.run_shell(
         command = 'typst="$1"; stub="$2"; shift 2; exec "$typst" "$@" < "$stub"',
         arguments = [args],
@@ -134,9 +143,14 @@ typst_document = rule(
         ),
         "format": attr.string(
             doc = "What to write, as <name>.<format>. A png or an svg " +
-                  "is one page, so the document must have only one.",
+                  "is one page, so the document must have only one, " +
+                  "unless file_per_page is set.",
             default = "pdf",
             values = ["pdf", "html", "svg", "png"],
+        ),
+        "file_per_page": attr.bool(
+            doc = "Write a png or an svg of each page, into the " +
+                  "directory <name>.pages, named by page number.",
         ),
         "ppi": attr.int(
             doc = "Pixels per inch of a png.",

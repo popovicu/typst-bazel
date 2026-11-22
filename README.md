@@ -199,6 +199,20 @@ typst_document(
 ```
 
 An SVG or a PNG is one page, and Typst refuses a document that has more.
+For a file of each page, set `file_per_page`:
+
+```starlark
+typst_document(
+    name = "slides",
+    main = "slides.typ",
+    format = "png",
+    file_per_page = True,
+)
+```
+
+That writes the directory `slides.pages`, holding `1.png`, `2.png` and
+so on, or `01.png` to `12.png` when there are twelve, so that they sort.
+
 A PNG has 144 pixels to the inch, or as many as `ppi` says.
 Typst calls its HTML export unfinished, and warns so on every build.
 

@@ -78,6 +78,17 @@ have to be compiled, which puts a Go or Rust toolchain in every build
 that wants a PDF. The price of the stub is a shell, used for one
 redirection and nothing else.
 
+## A file per page is a directory
+
+With `file_per_page`, the output is the directory `<name>.pages`, and
+Typst names the files in it by page number.
+
+Why: Bazel wants every output file named before anything runs, and how
+many pages a document has is known only after Typst has laid it out. A
+directory is the one output whose contents can wait. It is asked for, not
+the default, because one file is easier to use where one page is all
+there is: a figure, a preview.
+
 ## An action never downloads
 
 Typst downloads a `@preview` package it cannot find, and has no flag to

@@ -6,12 +6,12 @@ records the outcome.
 
 # Planned work
 
-## A file per page, and bundles
+## Bundles
 
-Typst writes one PNG or SVG per page, and a bundle of several files of
-any format, and how many is known only after compiling. A document that
-writes those needs a directory as its output. Today a PNG or an SVG is
-one page.
+Typst can write a bundle: several files of any format from one source,
+which names them itself, as a website of many pages would. Its output
+would be a directory, as a file per page is. Typst calls bundles
+unfinished, more so than HTML.
 
 ## Watching
 
