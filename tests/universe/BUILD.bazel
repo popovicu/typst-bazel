@@ -1,6 +1,7 @@
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//tests:fails_test.bzl", "fails_test")
+load("//typst/private:lock.bzl", "write_lock")
 load("//typst:defs.bzl", "typst_document", "typst_library")
 load(":imports_test.bzl", "imports_test", "splits_test")
 load(":pins_test.bzl", "pins_test")
@@ -76,4 +77,19 @@ diff_test(
     size = "small",
     file1 = "typst.lock.json",
     file2 = "@preview//:typst.lock.json",
+)
+
+# A path the shell would make something else of, given the chance.
+write_lock(
+    name = "writes",
+    lock = "{}\n",
+    lock_file = "a $(echo b) 'c'.json",
+)
+
+sh_test(
+    name = "writes_test",
+    size = "small",
+    srcs = ["writes_test.sh"],
+    args = ["$(rootpath writes)"],
+    data = ["writes"],
 )

@@ -39,16 +39,20 @@ unlocked_package = rule(
 _WRITE = """\
 #!/bin/sh
 set -eu
-cat > "$BUILD_WORKSPACE_DIRECTORY/{lock_file}" <<'END_OF_LOCK'
+cat > "$BUILD_WORKSPACE_DIRECTORY"/{lock_file} <<'END_OF_LOCK'
 {lock}END_OF_LOCK
-echo "Wrote {lock_file}"
+echo Wrote {lock_file}
 """
+
+def _quoted(text):
+    """Text as the shell reads it back unchanged."""
+    return "'" + text.replace("'", "'\\''") + "'"
 
 def _write_lock_impl(ctx):
     script = ctx.actions.declare_file(ctx.label.name + ".sh")
     ctx.actions.write(
         script,
-        _WRITE.format(lock_file = ctx.attr.lock_file, lock = ctx.attr.lock),
+        _WRITE.format(lock_file = _quoted(ctx.attr.lock_file), lock = ctx.attr.lock),
         is_executable = True,
     )
     return [DefaultInfo(executable = script)]
