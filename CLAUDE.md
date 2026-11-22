@@ -47,3 +47,9 @@ Read `README.md` first.
   packages documents import, and fonts all come through Bazel.
 - After cloning, turn the commit-size hook on:
   `git config core.hooksPath tools/hooks`.
+
+## AI-written
+
+This repository is written by AI, and `README.md` says so. Check what a
+doc says against the code before relying on it, and fix whichever is
+wrong.

@@ -10,6 +10,11 @@ Typst that Bazel downloads, from inputs Bazel knows about.
 > from Typst Universe. It is for Linux and macOS, and has run on macOS
 > only.
 
+> [!NOTE]
+> This codebase is AI-written. Treat [`docs/rules.md`](docs/rules.md) as
+> what the rules promise, and read the code before relying on it for
+> anything that matters.
+
 ## Choosing a Typst
 
 In `MODULE.bazel`:
