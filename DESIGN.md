@@ -17,6 +17,15 @@ What it costs: only machines Typst publishes for can run the build, and
 a release has to be added to the table before it can be chosen. GitHub
 publishes the hashes; nothing signs them.
 
+## Linux and macOS, not Windows
+
+The table lists Typst's releases for Linux and macOS and leaves out the
+ones for Windows.
+
+Why: nobody here builds on Windows, and the rules lean on a shell, to
+compile a document and to write the lock file. A release that is listed
+and cannot work is worse than one that is not listed.
+
 ## The root module's version wins
 
 Every module can name a Typst version. All of them become toolchains,

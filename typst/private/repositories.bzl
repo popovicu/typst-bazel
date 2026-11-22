@@ -7,27 +7,24 @@ load("{toolchain_bzl}", "typst_toolchain")
 
 typst_toolchain(
     name = "toolchain",
-    typst = "{binary}",
+    typst = "typst",
     version = "{version}",
     visibility = ["//visibility:public"],
 )
 """
 
 def _typst_release_impl(rctx):
-    windows = "windows" in rctx.attr.triple
     archive = "typst-" + rctx.attr.triple
     rctx.download_and_extract(
-        url = "https://github.com/typst/typst/releases/download/v{}/{}.{}".format(
+        url = "https://github.com/typst/typst/releases/download/v{}/{}.tar.xz".format(
             rctx.attr.version,
             archive,
-            "zip" if windows else "tar.xz",
         ),
         sha256 = rctx.attr.sha256,
         strip_prefix = archive,
     )
     rctx.file("BUILD.bazel", _RELEASE_BUILD.format(
         toolchain_bzl = Label("//typst:toolchain.bzl"),
-        binary = "typst.exe" if windows else "typst",
         version = rctx.attr.version,
     ))
 

@@ -34,16 +34,16 @@ name, which matters the day it is published.
 Each says what we do today, why it is good enough, and what would make us
 change it.
 
-## Tried on macOS only
+## Linux has not been run
 
 Today: the rules have been run on macOS on Apple silicon, in Bazel's
-sandbox and outside it. Releases for Linux and Windows are in the
-table, with hashes from GitHub, and have never been run.
+sandbox and outside it. Linux is meant to work the same way: its
+releases are in the table, with hashes from GitHub, and nothing in the
+rules asks which of the two it is on. It has never been tried.
 
-Revisit when: someone builds on Linux or Windows. Linux should work as
-macOS does. Windows needs the shell Bazel finds there to redirect
-standard input (`DESIGN.md`, "The main file is a stub on standard
-input").
+Revisit when: there is a Linux machine to run `bazel test //...` on.
+Likely answer: run the tests on both in continuous integration, and
+delete this entry.
 
 ## Packages are pinned by the hash of the archive
 
@@ -70,12 +70,6 @@ Revisit when: analysis of many documents that share large packages is
 slow. Likely answer: point Typst at the `@preview` repository directly,
 which is already laid out by name and version, and keep the tree for
 packages of the repository.
-
-## Writing the lock file needs a shell
-
-Today: `bazel run @preview//:lock` is a shell script.
-
-Revisit when: someone pins packages on Windows.
 
 ## The date is written in the BUILD file
 

@@ -7,7 +7,8 @@ Typst that Bazel downloads, from inputs Bazel knows about.
 > rules_typst is being built. This file describes what works today:
 > Bazel downloads Typst and compiles a document from files in one
 > repository, with fonts from anywhere, packages you wrote, and packages
-> from Typst Universe. It has run on macOS only.
+> from Typst Universe. It is for Linux and macOS, and has run on macOS
+> only.
 
 ## Choosing a Typst
 

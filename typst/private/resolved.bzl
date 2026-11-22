@@ -2,8 +2,7 @@
 
 def _resolved_typst_impl(ctx):
     typst = ctx.toolchains["//typst:toolchain_type"].typst
-    suffix = ".exe" if typst.extension == "exe" else ""
-    executable = ctx.actions.declare_file(ctx.label.name + suffix)
+    executable = ctx.actions.declare_file(ctx.label.name)
     ctx.actions.symlink(output = executable, target_file = typst, is_executable = True)
     return [DefaultInfo(executable = executable)]
 
