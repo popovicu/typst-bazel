@@ -1,0 +1,38 @@
+load("//typst:defs.bzl", "typst_document")
+load(":compile_test.bzl", "compile_test")
+
+# One document of each kind: plain, with a font, with a package, as pages.
+typst_document(
+    name = "plain",
+    main = "page.typ",
+)
+
+typst_document(
+    name = "font",
+    fonts = ["@fira_mono//file"],
+    main = "page.typ",
+)
+
+typst_document(
+    name = "package",
+    main = "page.typ",
+    deps = ["@preview//oxifmt:1.0.0"],
+)
+
+typst_document(
+    name = "pages",
+    file_per_page = True,
+    format = "svg",
+    main = "page.typ",
+)
+
+compile_test(
+    name = "compile_test",
+    size = "small",
+    documents = [
+        "font",
+        "package",
+        "pages",
+        "plain",
+    ],
+)
