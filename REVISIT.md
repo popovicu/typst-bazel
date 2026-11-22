@@ -59,6 +59,22 @@ changed. Universe rebuilds every archive when it deploys and promises
 nothing about their bytes; early in 2025 they did change. Likely answer:
 pin a hash of the unpacked files instead.
 
+## A package nobody asked for can still be used two ways
+
+Today: a label of `@preview` is visible only if some module asked for
+the package. Two things get past that. A document that depends on a
+package can import what that one imports, without naming it, because
+the files are there for the package's own use. And what a module below
+the root asked for is visible to the root too, because all modules share
+one `@preview`.
+
+Good enough because: both still build correctly, and the usual mistake,
+naming a label nobody asked for, is caught.
+
+Revisit when: a build breaks because a package went away with the one
+that brought it. Likely answer for the second: a repository of packages
+for each module.
+
 ## Packages are symlinked for each document
 
 Today: every file of every package a document imports gets a symlink
