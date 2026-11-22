@@ -111,6 +111,9 @@ use_repo(typst, "preview")
 `@preview/fletcher:0.6.0` in Typst is then `@preview//fletcher:0.6.0` in
 `deps`, and it brings the packages it imports itself.
 
+Those are for fletcher alone. A document that imports one of them itself
+names it in `MODULE.bazel` too; until then the label is not visible.
+
 Typst Universe publishes no hashes and no list of what a package
 imports, so the lock file holds both, for each package named and each
 one those import. It is written for you:

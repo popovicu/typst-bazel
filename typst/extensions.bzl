@@ -28,6 +28,7 @@ def _typst_impl(mctx):
     typst_universe(
         name = "preview",
         packages = resolved.packages,
+        asked = resolved.asked,
         deps = resolved.deps,
         unlocked = resolved.unlocked,
         lock_file = resolved.lock_file,

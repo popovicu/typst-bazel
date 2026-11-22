@@ -137,6 +137,17 @@ such an example and dropped, with a warning.
 This runs only for packages the lock file lacks. Once they are in the
 file, nothing is read and nothing is downloaded without a hash.
 
+## Only a package that was asked for can be named
+
+`@preview` holds every package in the lock file, but only those a
+`typst.package` names are visible outside it. The rest are visible to
+the packages of `@preview` alone.
+
+Why: a package that is there because another imports it goes when that
+one goes, or when it stops importing it. A document that named it would
+break in a change that never touched it. Now it fails the first time it
+is built, and one line in `MODULE.bazel` settles it.
+
 ## A lock file that lacks a package stops the build
 
 When the lock file is incomplete, every package target fails, saying

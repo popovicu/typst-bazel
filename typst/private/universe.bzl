@@ -16,7 +16,7 @@ typst_package(
     namespace = "preview",
     package_name = "{name}",
     version = "{version}",
-    visibility = ["//visibility:public"],
+    visibility = {visibility},
     deps = {deps},
 )
 """
@@ -42,6 +42,11 @@ write_lock(
 )
 """
 
+# A package nobody asked for is here because another imports it, and goes
+# when that one does. Only the packages here may name it.
+_ASKED = ["//visibility:public"]
+_IMPORTED = ["//:__subpackages__"]
+
 def _label(spec):
     return "//{}:{}".format(*spec.split(":"))
 
@@ -63,6 +68,7 @@ def _typst_universe_impl(rctx):
         ) if rctx.attr.unlocked else _PACKAGE.format(
             name = name,
             version = version,
+            visibility = _ASKED if spec in rctx.attr.asked else _IMPORTED,
             deps = [_label(dep) for dep in rctx.attr.deps[spec]],
         ))
     header = 'load("{}", "typst_package")\nload("{}", "unlocked_package")\n'.format(
@@ -83,6 +89,7 @@ typst_universe = repository_rule(
     doc = "Packages of Typst Universe, each pinned by the hash of its archive.",
     attrs = {
         "packages": attr.string_dict(doc = "name:version, to the archive's SHA-256."),
+        "asked": attr.string_list(doc = "The packages a module asks for by name."),
         "deps": attr.string_list_dict(doc = "name:version, to the packages it imports."),
         "unlocked": attr.string_list(doc = "The packages the lock file lacks."),
         "lock_file": attr.string(doc = "The root module's lock file, as a path."),
@@ -127,6 +134,7 @@ def resolve_packages(mctx):
       A struct of what typst_universe takes.
     """
     packages = {}
+    asked_for = []
     deps = {}
     unlocked = []
     lock_file = ""
@@ -143,6 +151,7 @@ def resolve_packages(mctx):
         mctx.watch(file)
         pinned = json.decode(mctx.read(file)) if mctx.path(file).exists else {}
         asked = len(todo)
+        asked_for.extend(todo)
         for i in range(100000):
             if i == len(todo):
                 break
@@ -172,6 +181,7 @@ def resolve_packages(mctx):
             ) + "\n"
     return struct(
         packages = packages,
+        asked = asked_for,
         deps = deps,
         unlocked = unlocked,
         lock_file = lock_file,
