@@ -2,7 +2,7 @@ load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//tests:fails_test.bzl", "fails_test")
 load("//typst:defs.bzl", "typst_document", "typst_library")
-load(":imports_test.bzl", "imports_test")
+load(":imports_test.bzl", "imports_test", "splits_test")
 load(":pins_test.bzl", "pins_test")
 
 exports_files(["typst.lock.json"])
@@ -57,6 +57,11 @@ fails_test(
 
 imports_test(
     name = "imports_test",
+    size = "small",
+)
+
+splits_test(
+    name = "splits_test",
     size = "small",
 )
 

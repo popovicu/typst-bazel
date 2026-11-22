@@ -2,6 +2,7 @@
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//typst/private:imports.bzl", "preview_imports")
+load("//typst/private:universe.bzl", "splits_package")
 
 _SOURCE = """\
 #import "@preview/cetz:0.5.3"
@@ -32,3 +33,13 @@ def _imports_test(ctx):
     return unittest.end(env)
 
 imports_test = unittest.make(_imports_test)
+
+def _splits_test(ctx):
+    env = unittest.begin(ctx)
+    for name in ["BUILD", "build", "BUILD.bazel", "Build.Bazel", "WORKSPACE", "MODULE.bazel", "REPO.bazel"]:
+        asserts.true(env, splits_package(name), name)
+    for name in ["build.typ", "builder", "lib.typ", "typst.toml", "BUILD.md"]:
+        asserts.false(env, splits_package(name), name)
+    return unittest.end(env)
+
+splits_test = unittest.make(_splits_test)

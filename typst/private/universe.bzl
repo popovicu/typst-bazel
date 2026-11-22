@@ -52,6 +52,34 @@ _IMPORTED = ["//:__subpackages__"]
 def _label(spec):
     return "//{}:{}".format(*spec.split(":"))
 
+def _files(directory):
+    """Every file under a directory."""
+    files = []
+    directories = [directory]
+    for i in range(100000):
+        if i == len(directories):
+            break
+        for entry in directories[i].readdir():
+            if entry.is_dir:
+                directories.append(entry)
+            else:
+                files.append(entry)
+    return files
+
+def splits_package(basename):
+    """Whether Bazel takes a directory with this file for a package of its own.
+
+    A file system that ignores case reads build as BUILD.
+    """
+    return basename.lower() in [
+        "build",
+        "build.bazel",
+        "module.bazel",
+        "repo.bazel",
+        "workspace",
+        "workspace.bazel",
+    ]
+
 def _typst_universe_impl(rctx):
     # @preview/cetz:0.5.3 is //cetz:0.5.3 here, its files in cetz/0.5.3.
     builds = {}
@@ -63,6 +91,12 @@ def _typst_universe_impl(rctx):
             output = "{}/{}".format(name, version),
             type = "tar.gz",
         )
+
+        # A package may ship a script called build. Typst does not read
+        # it, and Bazel would stop at its directory and leave it out.
+        for file in _files(rctx.path("{}/{}".format(name, version))):
+            if splits_package(file.basename):
+                rctx.delete(file)
         builds.setdefault(name, []).append(_UNLOCKED.format(
             version = version,
             lock_file = repr(rctx.attr.lock_file),
@@ -128,15 +162,9 @@ def _resolve(mctx, spec, required):
         fail(("@preview/{} could not be downloaded. Bazel keeps that answer " +
               "until it restarts: bazel shutdown, then run this again.").format(spec))
     found = []
-    directories = [mctx.path(directory)]
-    for i in range(100000):
-        if i == len(directories):
-            break
-        for entry in directories[i].readdir():
-            if entry.is_dir:
-                directories.append(entry)
-            elif entry.basename.endswith(".typ"):
-                found.extend(preview_imports(mctx.read(entry)))
+    for file in _files(mctx.path(directory)):
+        if file.basename.endswith(".typ"):
+            found.extend(preview_imports(mctx.read(file)))
     deps = sorted({dep: None for dep in found if dep != spec}.keys())
     return {"deps": deps, "sha256": result.sha256}
 
