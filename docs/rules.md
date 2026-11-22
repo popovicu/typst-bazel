@@ -21,7 +21,7 @@ Compiles one document. `bazel build` of the target writes
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `main` | Label | required | The `.typ` file Typst compiles. |
-| `srcs` | List of labels | `[]` | Every other file the document reads by path: what it imports and includes, images, data. Source files or outputs of other rules, from any package of this repository. |
+| `srcs` | List of labels | `[]` | Every other file the document reads by path: what it imports and includes, images, data. Source files or outputs of other rules, from any package of this repository. An output that is a directory, as `<name>.pages` is, is read by the paths inside it. |
 | `deps` | List of labels | `[]` | `typst_library` targets whose files the document reads, and `typst_package` targets it imports. |
 | `format` | String | `"pdf"` | `"pdf"`, `"html"`, `"svg"` or `"png"`. |
 | `file_per_page` | Boolean | `False` | For `"png"` and `"svg"`: write a file of each page into `<name>.pages`, named by page number and padded so they sort (`1.png`, or `01.png` of twelve). An error with the other formats. |

@@ -39,7 +39,10 @@ def _typst_document_impl(ctx):
     libraries = [dep[TypstLibraryInfo] for dep in ctx.attr.deps if TypstLibraryInfo in dep]
     for file in depset([ctx.file.main] + ctx.files.srcs, transitive = [library.files for library in libraries]).to_list():
         path = _root_path(ctx, file)
-        staged[path] = ctx.actions.declare_file("{}.root/{}".format(name, path))
+
+        # A directory is what a document with a file per page writes.
+        declare = ctx.actions.declare_directory if file.is_directory else ctx.actions.declare_file
+        staged[path] = declare("{}.root/{}".format(name, path))
         ctx.actions.symlink(output = staged[path], target_file = file)
     main = _root_path(ctx, ctx.file.main)
     root = staged[main].path.removesuffix("/" + main)

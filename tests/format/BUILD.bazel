@@ -107,3 +107,21 @@ fails_test(
     message = "which Typst takes for a page number",
     target_under_test = "page_{p}",
 )
+
+# The pages of one document, as pictures in another.
+typst_document(
+    name = "album",
+    srcs = ["pages_png"],
+    main = "album.typ",
+)
+
+sh_test(
+    name = "album_test",
+    size = "small",
+    srcs = ["//tests:contains_test.sh"],
+    args = [
+        "$(rootpath album)",
+        "'/Title(Pages 1 and 12)'",
+    ],
+    data = ["album"],
+)
