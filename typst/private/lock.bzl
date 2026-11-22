@@ -1,4 +1,25 @@
-"""Rules for the repository of packages, about its lock file."""
+"""Rules for the repository of packages."""
+
+load(":providers.bzl", "TypstPackageInfo")
+
+def _package_with_imports_impl(ctx):
+    return [
+        DefaultInfo(files = ctx.attr.packages[0][DefaultInfo].files),
+        TypstPackageInfo(packages = depset(
+            transitive = [package[TypstPackageInfo].packages for package in ctx.attr.packages],
+        )),
+    ]
+
+package_with_imports = rule(
+    implementation = _package_with_imports_impl,
+    doc = "A package of Typst Universe, with every package it imports.",
+    attrs = {
+        "packages": attr.label_list(
+            doc = "The package first, then the others.",
+            providers = [TypstPackageInfo],
+        ),
+    },
+)
 
 def _unlocked_package_impl(ctx):
     fail("{} does not pin {}. To pin what it lacks: bazel run @preview//:lock".format(

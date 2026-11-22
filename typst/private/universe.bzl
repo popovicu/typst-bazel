@@ -6,9 +6,13 @@ load(":pins.bzl", "read_pins")
 _URL = "https://packages.typst.org/preview/{}-{}.tar.gz"
 _INDEX = "https://packages.typst.org/preview/index.json"
 
+# A package is two targets: its own files, and those with the files of
+# every package it imports, however far down. Imports are as the sources
+# read, which can be in a circle that targets depending on each other
+# could not be.
 _PACKAGE = """
 typst_package(
-    name = "{version}",
+    name = "{version}.alone",
     srcs = glob(
         ["{version}/**"],
         allow_empty = True,
@@ -18,8 +22,13 @@ typst_package(
     namespace = "preview",
     package_name = "{name}",
     version = "{version}",
+    visibility = ["//:__subpackages__"],
+)
+
+package_with_imports(
+    name = "{version}",
+    packages = {packages},
     visibility = {visibility},
-    deps = {deps},
 )
 """
 
@@ -49,8 +58,14 @@ write_lock(
 _ASKED = ["//visibility:public"]
 _IMPORTED = ["//:__subpackages__"]
 
-def _label(spec):
-    return "//{}:{}".format(*spec.split(":"))
+def _with_imports(spec, deps):
+    """The targets of a package's own files and of all it imports."""
+    specs = [spec]
+    for i in range(100000):
+        if i == len(specs):
+            break
+        specs.extend([dep for dep in deps[specs[i]] if dep not in specs])
+    return ["//{}:{}.alone".format(*each.split(":")) for each in specs]
 
 def _files(directory):
     """Every file under a directory."""
@@ -105,9 +120,9 @@ def _typst_universe_impl(rctx):
             name = name,
             version = version,
             visibility = _ASKED if spec in rctx.attr.asked else _IMPORTED,
-            deps = [_label(dep) for dep in rctx.attr.deps[spec]],
+            packages = _with_imports(spec, rctx.attr.deps),
         ))
-    header = 'load("{}", "typst_package")\nload("{}", "unlocked_package")\n'.format(
+    header = 'load("{}", "typst_package")\nload("{}", "package_with_imports", "unlocked_package")\n'.format(
         Label("//typst:defs.bzl"),
         Label(":lock.bzl"),
     )

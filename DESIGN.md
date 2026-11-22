@@ -133,7 +133,7 @@ Bazel, and one that can be published as it is. Typst refuses a package
 whose manifest disagrees with where it was found, so the two cannot
 drift apart unnoticed.
 
-Packages are symlinked into a tree per document, `<name>.packages`, as
+Packages are symlinked into a tree per document, as
 its files are, and Typst is pointed there for both of the places it
 looks, so packages installed on the machine are never seen.
 
@@ -168,6 +168,11 @@ Universe's list of packages does not have, is taken for such an example
 and dropped, with a warning. One that the list does have is the network
 failing, and stops the lock command: a lock file written without it
 would be wrong, and nothing would ever put it right.
+
+Reading too much can also close a circle: a package whose example
+imports another that imports it. So a package's target does not depend
+on the targets of its imports. It lists the files of every package it
+reaches, each a target with no dependencies of its own.
 
 This runs only for packages the lock file lacks. Once they are in the
 file, nothing is read and nothing is downloaded without a hash.

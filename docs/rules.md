@@ -160,7 +160,7 @@ Brought in with `use_repo(typst, "preview")`.
 
 | Target | What it is |
 |--------|------------|
-| `@preview//name:version` | A `typst_package`, with the packages it imports. Visible only if a `typst.package` asks for it by name. |
+| `@preview//name:version` | A package, with every package it imports, however far down. Visible only if a `typst.package` asks for it by name. |
 | `@preview//:lock` | Run it to write the root module's lock file: it pins what the file lacks, keeps the hashes it has, and drops what nothing asks for. |
 | `@preview//:typst.lock.json` | What that would write, to compare with the file checked in. |
 
