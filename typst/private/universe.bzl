@@ -4,6 +4,7 @@ load(":imports.bzl", "preview_imports")
 load(":pins.bzl", "read_pins")
 
 _URL = "https://packages.typst.org/preview/{}-{}.tar.gz"
+_INDEX = "https://packages.typst.org/preview/index.json"
 
 _PACKAGE = """
 typst_package(
@@ -98,6 +99,13 @@ typst_universe = repository_rule(
     },
 )
 
+def _published(mctx):
+    """Every name:version in Typst Universe, or None if it cannot be asked."""
+    index = mctx.path("resolve/index.json")
+    if not index.exists and not mctx.download(url = _INDEX, output = index, allow_fail = True).success:
+        return None
+    return ["{}:{}".format(package["name"], package["version"]) for package in json.decode(mctx.read(index))]
+
 def _resolve(mctx, spec, required):
     """Downloads a package to learn its hash and what it imports."""
     name, version = spec.split(":")
@@ -106,12 +114,19 @@ def _resolve(mctx, spec, required):
         url = _URL.format(name, version),
         output = directory,
         type = "tar.gz",
-        allow_fail = not required,
+        allow_fail = True,
     )
-    if not result.success:
+    published = None if result.success else _published(mctx)
+    if published != None and spec not in published and not required:
         # buildifier: disable=print
-        print("@preview/{} is named by a package, and cannot be downloaded".format(spec))
+        print("@preview/{} is named by a package, and is not one".format(spec))
         return None
+    if published != None and spec not in published:
+        fail("@preview/{} is not a package of Typst Universe".format(spec))
+    if not result.success:
+        # A package, or there is no telling: either way it is the network.
+        fail(("@preview/{} could not be downloaded. Bazel keeps that answer " +
+              "until it restarts: bazel shutdown, then run this again.").format(spec))
     found = []
     directories = [mctx.path(directory)]
     for i in range(100000):

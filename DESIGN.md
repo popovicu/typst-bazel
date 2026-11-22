@@ -163,8 +163,11 @@ skipping lines that are comments. It does not parse Typst.
 Why: the only complete answer is in the sources, and parsing them
 properly takes Typst's own parser, which is a program to build. Reading
 too much is harmless: a package named in an example and never imported
-costs one download. A name that cannot be downloaded at all is taken for
-such an example and dropped, with a warning.
+costs one download. A name that cannot be downloaded, and that Typst
+Universe's list of packages does not have, is taken for such an example
+and dropped, with a warning. One that the list does have is the network
+failing, and stops the lock command: a lock file written without it
+would be wrong, and nothing would ever put it right.
 
 This runs only for packages the lock file lacks. Once they are in the
 file, nothing is read and nothing is downloaded without a hash.
