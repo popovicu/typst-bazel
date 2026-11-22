@@ -171,7 +171,8 @@ def resolve_packages(mctx):
                 unlocked.append(spec)
             if packages.setdefault(spec, entry["sha256"]) != entry["sha256"]:
                 fail("@preview/{} has two hashes, one of them in {}".format(spec, file))
-            deps[spec] = entry["deps"]
+            if deps.setdefault(spec, entry["deps"]) != entry["deps"]:
+                fail("@preview/{} imports other packages in {} than in another lock file".format(spec, file))
             todo.extend([dep for dep in deps[spec] if dep not in todo])
 
         # A package that does not exist was named in an example, not imported.
