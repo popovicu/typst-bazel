@@ -38,7 +38,8 @@ and cannot work is worse than one that is not listed.
 
 Every module can name a Typst version. All of them become toolchains,
 the root module's first, and toolchain resolution takes the first that
-runs on the machine.
+runs on the machine. Bazel takes the toolchains of a repository in the
+order of their names, so each is named with its place in line first.
 
 Why: a document's output depends on the Typst that compiled it (the
 embedded fonts change between releases), so whoever owns the build should

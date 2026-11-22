@@ -42,7 +42,7 @@ _TOOLCHAIN = """\
 toolchain(
     name = "{name}",
     exec_compatible_with = {constraints},
-    toolchain = "@{name}//:toolchain",
+    toolchain = "@{repository}//:toolchain",
     toolchain_type = "{toolchain_type}",
 )
 """
@@ -50,13 +50,17 @@ toolchain(
 def _typst_toolchains_impl(rctx):
     # Naming a release here does not fetch it: Bazel downloads only the
     # one whose constraints match the machine running the build.
+    #
+    # Bazel registers the toolchains of :all in the order of their names,
+    # not of this file, so each name starts with its place in line.
     rctx.file("BUILD.bazel", "\n".join([
         _TOOLCHAIN.format(
-            name = name,
+            name = "{}_{}".format(("000" + str(place))[-4:], repository),
+            repository = repository,
             constraints = ["@platforms//" + c for c in PLATFORMS[triple]],
             toolchain_type = Label("//typst:toolchain_type"),
         )
-        for name, triple in rctx.attr.releases.items()
+        for place, (repository, triple) in enumerate(rctx.attr.releases.items())
     ]))
 
 typst_toolchains = repository_rule(
