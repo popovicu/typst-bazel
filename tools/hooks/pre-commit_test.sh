@@ -31,4 +31,8 @@ expect pass "goldens are excluded"
 lines 50 MODULE.bazel.lock && git add MODULE.bazel.lock
 expect pass "lockfiles are excluded"
 
+mkdir -p b && lines 50 b/typst.lock.json && git add b
+lines 50 typst.lock.json && git add typst.lock.json
+expect pass "lock files of packages are excluded"
+
 echo PASS

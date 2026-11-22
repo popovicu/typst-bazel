@@ -10,6 +10,7 @@ limit=${TYPST_BAZEL_COMMIT_LIMIT:-200}
 total=$(git diff --cached --numstat -- . \
     ':(exclude,glob)**/testdata/**' \
     ':(exclude,glob)**/*.lock' \
+    ':(exclude,glob)**/*.lock.json' \
     | awk '$1 != "-" { s += $1 + $2 } END { print s + 0 }')
 
 if [ "$total" -gt "$limit" ]; then
