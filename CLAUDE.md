@@ -1,6 +1,6 @@
 # Working in this repo
 
-rules_typst is a set of Bazel rules for the Typst typesetting compiler.
+typst-bazel is a set of Bazel rules for the Typst typesetting compiler.
 Read `README.md` first.
 
 ## Commits

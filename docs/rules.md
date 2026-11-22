@@ -3,10 +3,10 @@
 Every rule, attribute and provider. `README.md` is the guide that shows
 them in use; `DESIGN.md` says why they are this way.
 
-The rules are loaded from `@rules_typst//typst:defs.bzl`:
+The rules are loaded from `@typst-bazel//typst:defs.bzl`:
 
 ```starlark
-load("@rules_typst//typst:defs.bzl", "typst_document", "typst_library", "typst_package")
+load("@typst-bazel//typst:defs.bzl", "typst_document", "typst_library", "typst_package")
 ```
 
 ## typst_document
@@ -105,7 +105,7 @@ that claim the same one are an error.
 ## The module extension
 
 ```starlark
-typst = use_extension("@rules_typst//typst:extensions.bzl", "typst")
+typst = use_extension("@typst-bazel//typst:extensions.bzl", "typst")
 ```
 
 ### typst.toolchain
@@ -171,15 +171,15 @@ have every package in its lock file already.
 ## Running Typst
 
 ```bash
-bazel run @rules_typst//typst -- fonts
+bazel run @typst-bazel//typst -- fonts
 ```
 
-`@rules_typst//typst` is the chosen release, as an executable.
+`@typst-bazel//typst` is the chosen release, as an executable.
 
 ## Bringing your own Typst
 
 ```starlark
-load("@rules_typst//typst:toolchain.bzl", "typst_toolchain")
+load("@typst-bazel//typst:toolchain.bzl", "typst_toolchain")
 
 typst_toolchain(name, typst, version)
 ```
@@ -189,7 +189,7 @@ typst_toolchain(name, typst, version)
 | `typst` | Label | required | The `typst` executable. |
 | `version` | String | required | Its version, as in `0.15.1`. |
 
-Wrap it in a `toolchain()` of type `@rules_typst//typst:toolchain_type`
+Wrap it in a `toolchain()` of type `@typst-bazel//typst:toolchain_type`
 and register that in the root module, whose toolchains come ahead of the
 downloaded ones. The extension still wants a `typst.toolchain` line.
 Rules read `typst`, the executable, and `version` from the toolchain.

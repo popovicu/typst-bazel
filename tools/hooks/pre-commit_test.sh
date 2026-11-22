@@ -11,7 +11,7 @@ git init -q
 lines() { seq "$1" > "$2"; }
 
 expect() {  # expect <pass|fail> <description>
-    if RULES_TYPST_COMMIT_LIMIT=10 sh "$hook" 2>/dev/null; then got=pass; else got=fail; fi
+    if TYPST_BAZEL_COMMIT_LIMIT=10 sh "$hook" 2>/dev/null; then got=pass; else got=fail; fi
     if [ "$got" != "$1" ]; then
         echo "FAIL: $2: expected $1, got $got" >&2
         exit 1

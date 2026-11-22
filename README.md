@@ -1,10 +1,10 @@
-# rules_typst
+# typst-bazel
 
 Bazel rules for [Typst](https://typst.app): compile documents with a
 Typst that Bazel downloads, from inputs Bazel knows about.
 
 > [!WARNING]
-> rules_typst is being built. This file describes what works today:
+> typst-bazel is being built. This file describes what works today:
 > Bazel downloads Typst and compiles a document from files in one
 > repository, with fonts from anywhere, packages you wrote, and packages
 > from Typst Universe. It is for Linux and macOS, and has run on macOS
@@ -20,9 +20,9 @@ Typst that Bazel downloads, from inputs Bazel knows about.
 In `MODULE.bazel`:
 
 ```starlark
-bazel_dep(name = "rules_typst", version = "...")
+bazel_dep(name = "typst-bazel", version = "...")
 
-typst = use_extension("@rules_typst//typst:extensions.bzl", "typst")
+typst = use_extension("@typst-bazel//typst:extensions.bzl", "typst")
 typst.toolchain(version = "0.15.1")
 ```
 
@@ -34,13 +34,13 @@ releases to choose from.
 To run it by hand:
 
 ```bash
-bazel run @rules_typst//typst -- fonts
+bazel run @typst-bazel//typst -- fonts
 ```
 
 ## Compiling a document
 
 ```starlark
-load("@rules_typst//typst:defs.bzl", "typst_document")
+load("@typst-bazel//typst:defs.bzl", "typst_document")
 
 typst_document(
     name = "report",
@@ -64,7 +64,7 @@ Files that several documents read go in a library, which brings along
 the libraries it reads from in turn:
 
 ```starlark
-load("@rules_typst//typst:defs.bzl", "typst_library")
+load("@typst-bazel//typst:defs.bzl", "typst_library")
 
 typst_library(
     name = "style",
@@ -82,7 +82,7 @@ A package is a directory with a `typst.toml`, imported by name from
 anywhere, another repository included:
 
 ```starlark
-load("@rules_typst//typst:defs.bzl", "typst_package")
+load("@typst-bazel//typst:defs.bzl", "typst_package")
 
 typst_package(
     name = "house-style",

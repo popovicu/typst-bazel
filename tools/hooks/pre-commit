@@ -3,9 +3,9 @@
 #
 # Counts added + deleted lines across staged files, skipping goldens
 # (anything under a testdata/ directory) and lockfiles. Binary files
-# don't count. Override the limit with RULES_TYPST_COMMIT_LIMIT.
+# don't count. Override the limit with TYPST_BAZEL_COMMIT_LIMIT.
 
-limit=${RULES_TYPST_COMMIT_LIMIT:-200}
+limit=${TYPST_BAZEL_COMMIT_LIMIT:-200}
 
 total=$(git diff --cached --numstat -- . \
     ':(exclude,glob)**/testdata/**' \

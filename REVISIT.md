@@ -28,13 +28,6 @@ the two side by side: what each can build, what each needs on the
 machine and in the build, how each pins Typst and packages, and how
 they behave on the same documents.
 
-## A name of its own
-
-This module is called `rules_typst`, which is the name of the one
-already in the registry. It will be renamed, to `typst-bazel` or
-something like it, before it is published: the module, the repository,
-and every `@rules_typst` in the docs.
-
 # Provisional decisions
 
 Each says what we do today, why it is good enough, and what would make us

@@ -1,7 +1,15 @@
 # Design
 
-The decisions behind rules_typst, and why. Edited in place as they
+The decisions behind typst-bazel, and why. Edited in place as they
 change.
+
+## A name of its own
+
+The module is `typst-bazel`, not `rules_typst` as Bazel rules are
+usually named.
+
+Why: the Bazel Central Registry already has a `rules_typst`, from
+another project, and a registry holds one module per name.
 
 ## Typst is downloaded, not built
 
