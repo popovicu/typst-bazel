@@ -1,7 +1,7 @@
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//tests:fails_test.bzl", "fails_test")
 load("//typst:defs.bzl", "typst_document", "typst_library")
-load(":hidden_test.bzl", "hidden_test")
 load(":imports_test.bzl", "imports_test")
 
 exports_files(["typst.lock.json"])
@@ -47,9 +47,10 @@ typst_library(
     deps = ["@preview//cetz:0.5.3"],
 )
 
-hidden_test(
+fails_test(
     name = "hidden_test",
     size = "small",
+    message = "is not visible from",
     target_under_test = "names_cetz",
 )
 
