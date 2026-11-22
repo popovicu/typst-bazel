@@ -1,6 +1,7 @@
 """Packages from Typst Universe, as a repository of typst_package targets."""
 
 load(":imports.bzl", "preview_imports")
+load(":pins.bzl", "read_pins")
 
 _URL = "https://packages.typst.org/preview/{}-{}.tar.gz"
 
@@ -149,7 +150,9 @@ def resolve_packages(mctx):
 
         # Watched whether or not it exists: writing it changes the answer.
         mctx.watch(file)
-        pinned = json.decode(mctx.read(file)) if mctx.path(file).exists else {}
+        pinned = read_pins(mctx.read(file)) if mctx.path(file).exists else {}
+        if pinned == None:
+            fail("{} is not a lock file as bazel run @preview//:lock writes one. Delete it, and run that.".format(file))
         asked = len(todo)
         asked_for.extend(todo)
         for i in range(100000):
