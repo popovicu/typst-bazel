@@ -1,5 +1,6 @@
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
-load("//typst:defs.bzl", "typst_document")
+load("//tests:fails_test.bzl", "fails_test")
+load("//typst:defs.bzl", "typst_document", "typst_package")
 
 typst_document(
     name = "greets",
@@ -50,4 +51,19 @@ sh_test(
         "'/Title(hello from the letterhead)'",
     ],
     data = ["letter"],
+)
+
+# A manifest by another name, which only ends as typst.toml does.
+typst_package(
+    name = "odd",
+    manifest = "odd/mytypst.toml",
+    tags = ["manual"],
+    version = "1.0.0",
+)
+
+fails_test(
+    name = "odd_test",
+    size = "small",
+    message = "is not a typst.toml",
+    target_under_test = "odd",
 )

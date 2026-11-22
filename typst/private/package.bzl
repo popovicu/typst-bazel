@@ -4,6 +4,8 @@ load(":providers.bzl", "TypstPackageInfo")
 
 def _typst_package_impl(ctx):
     # The package is the directory of its manifest, as it is for Typst.
+    if ctx.file.manifest.basename != "typst.toml":
+        fail("manifest {} of {} is not a typst.toml".format(ctx.file.manifest.short_path, ctx.label))
     prefix = ctx.file.manifest.short_path.removesuffix("typst.toml")
     files = [ctx.file.manifest] + ctx.files.srcs
     for file in files:
