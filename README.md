@@ -140,7 +140,8 @@ error.
 The lock file is never edited by hand. To add a package, change its
 version, or drop it, change the `typst.package` lines and run the same
 command again: it pins what is new, keeps the hashes it has, and removes
-what nothing asks for any more. Check both files in together.
+what nothing asks for any more, down to an empty file when the last
+package goes. Check both files in together.
 
 To have a test say when the two disagree, compare the lock file with the
 one the command would write:

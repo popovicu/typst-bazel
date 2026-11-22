@@ -142,7 +142,9 @@ def resolve_packages(mctx):
     lock = ""
     for module in mctx.modules:
         todo = ["{}:{}".format(tag.name, tag.version) for tag in module.tags.package]
-        if not todo:
+
+        # A module that dropped its last package still has a file to empty.
+        if not todo and not module.tags.lock:
             continue
         if len(module.tags.lock) != 1:
             fail("{} asks for packages, so it needs one typst.lock(file = ...)".format(module.name))
