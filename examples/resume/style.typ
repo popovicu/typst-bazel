@@ -3,9 +3,11 @@
 #let accent = rgb("#1f4e79")
 #let date-column = 4cm
 
-// Wraps the whole document: #show: resume.with(name: "...").
-#let resume(name: none, keywords: (), body) = {
-  set document(title: "Resume - " + name, author: name, keywords: keywords)
+// A browser lays out for itself, so on the web a block is plain structure
+// and on a page it is what the page looks like.
+#let on-web(web, paged) = context if target() == "html" { web } else { paged }
+
+#let paged(body) = {
   set page(
     paper: "us-letter",
     margin: (left: 2cm, right: 2cm, top: 1.7cm, bottom: 2cm),
@@ -23,33 +25,55 @@
   body
 }
 
-#let header(name, ..contact) = grid(
-  columns: (1fr, auto),
-  inset: (left: 6pt),
-  text(size: 15pt, fill: accent, name),
-  align(right, contact.pos().join(linebreak())),
+// Wraps the whole document: #show: resume.with(name: "...").
+#let resume(name: none, keywords: (), body) = {
+  set document(title: "Resume - " + name, author: name, keywords: keywords)
+  on-web(body, paged(body))
+}
+
+#let header(name, ..contact) = on-web(
+  [#title(name) #contact.pos().join(linebreak())],
+  grid(
+    columns: (1fr, auto),
+    inset: (left: 6pt),
+    text(size: 15pt, fill: accent, name),
+    align(right, contact.pos().join(linebreak())),
+  ),
 )
 
 // A number worth noticing inside a description.
-#let metric(body) = text(size: 0.9em, weight: "bold", body)
+#let metric(body) = on-web(strong(body), text(size: 0.9em, weight: "bold", body))
 
 // One row: dates on the left, in the font the library brings; title,
 // place and description on the right.
-#let entry(when, title: none, where: none, body) = block(
-  breakable: false,
-  below: 0.85em,
-  grid(
-    columns: (date-column, 1fr),
-    column-gutter: 12pt,
-    inset: (left: 6pt),
-    text(font: "Fira Mono", size: 0.85em, when),
-    {
-      if title != none {
-        text(size: 9.5pt, weight: "bold", fill: accent, title)
-        if where != none { h(5mm); text(fill: accent, where) }
-        linebreak()
-      }
-      body
-    },
+#let entry(when, title: none, where: none, body) = on-web(
+  [
+    #if title != none [*#title*#if where != none [, #where] \ ]
+    #emph(when) \
+    #body
+  ],
+  block(
+    breakable: false,
+    below: 0.85em,
+    grid(
+      columns: (date-column, 1fr),
+      column-gutter: 12pt,
+      inset: (left: 6pt),
+      text(font: "Fira Mono", size: 0.85em, when),
+      {
+        if title != none {
+          text(size: 9.5pt, weight: "bold", fill: accent, title)
+          if where != none { h(5mm); text(fill: accent, where) }
+          linebreak()
+        }
+        body
+      },
+    ),
   ),
 )
+
+// The last line, at the foot of a page.
+#let footer(body) = on-web(emph(body), {
+  v(1fr)
+  align(right, text(size: 7pt, fill: gray, body))
+})

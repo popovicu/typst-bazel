@@ -1,5 +1,5 @@
 // The resume of someone who does not exist.
-#import "style.typ": entry, header, metric, resume
+#import "style.typ": entry, footer, header, metric, resume
 
 // The rule says which resume this is: bazel build :resume or :short.
 #let variant = sys.inputs.at("variant", default: "full")
@@ -9,7 +9,7 @@
 
 #header(
   "Ada Example",
-  link("https://example.com")[https://example.com],
+  link("https://example.com"),
   "ada@example.com",
 )
 
@@ -46,7 +46,6 @@
   ]
 ]
 
-#v(1fr)
-#align(right, text(size: 7pt, fill: gray)[
+#footer[
   Updated #datetime.today().display("[month repr:long] [day padding:none], [year]")
-])
+]

@@ -233,9 +233,13 @@ typst_document(
 
 ## An example
 
-`examples/resume` is a resume built three ways from one source: in
-full, in short, and as a picture. Its look is a library that brings its
-own font.
+`examples/resume` is a resume built four ways from one source: in
+full, in short, as a picture, and as a web page. Its look is a library
+that brings its own font.
+
+Typst's HTML export leaves out what only a page has: grids, lines,
+spacing. So the library asks `target()` which it is writing for, and
+gives a browser headings and paragraphs where a page gets columns.
 
 ```bash
 bazel build //examples/resume:all

@@ -71,3 +71,28 @@ sh_test(
     ],
     data = ["preview"],
 )
+
+# And as a web page: the style gives a browser structure, not layout.
+typst_document(
+    name = "web",
+    date = "2026-11-21",
+    format = "html",
+    main = "resume.typ",
+    deps = [":style"],
+)
+
+[sh_test(
+    name = "web_%s_test" % what,
+    size = "small",
+    srcs = ["//tests:contains_test.sh"],
+    args = [
+        "$(rootpath web)",
+        "'%s'" % text,
+    ],
+    data = ["web"],
+) for what, text in {
+    "name": "<h1>Ada Example</h1>",
+    "section": "<h2>Experience</h2>",
+    "entry": "<strong>Staff Engineer</strong>, Example Corp",
+    "date": "Updated November 21, 2026",
+}.items()]
