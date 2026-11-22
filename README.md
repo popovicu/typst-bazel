@@ -17,10 +17,16 @@ Typst that Bazel downloads, from inputs Bazel knows about.
 
 ## Choosing a Typst
 
-In `MODULE.bazel`:
+No registry has the rules yet, so a module gets them from GitHub. In
+`MODULE.bazel`:
 
 ```starlark
-bazel_dep(name = "typst-bazel", version = "...")
+bazel_dep(name = "typst-bazel")
+git_override(
+    module_name = "typst-bazel",
+    commit = "70094cb10cd35419f13106b7547349550538df5c",  # v0.0.1
+    remote = "https://github.com/popovicu/typst-bazel.git",
+)
 
 typst = use_extension("@typst-bazel//typst:extensions.bzl", "typst")
 typst.toolchain(version = "0.15.1")
