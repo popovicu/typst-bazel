@@ -270,3 +270,7 @@ bazel test //...
 
 See `docs/rules.md` for every rule and attribute, `DESIGN.md` for why
 things are the way they are, and `CLAUDE.md` for how changes are made.
+
+## License
+
+MIT, in `LICENSE`.
