@@ -252,5 +252,5 @@ bazel build //examples/resume:all
 bazel test //...
 ```
 
-See `CLAUDE.md` for how changes are made and `DESIGN.md` for why things
-are the way they are.
+See `docs/rules.md` for every rule and attribute, `DESIGN.md` for why
+things are the way they are, and `CLAUDE.md` for how changes are made.

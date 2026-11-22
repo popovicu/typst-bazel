@@ -20,9 +20,12 @@ Read `README.md` first.
   the log.
 - When code changes, update the doc that describes it in the same commit,
   or delete the stale text.
-- Allowed docs: `README.md` (what and how), `DESIGN.md` (decisions and
-  why, edited in place), `REVISIT.md` (provisional decisions to come back
-  to), and `CLAUDE.md` (this file). Nothing else unless agreed.
+- Allowed docs: `README.md` (what and how), `docs/rules.md` (every rule,
+  attribute and provider), `DESIGN.md` (decisions and why, edited in
+  place), `REVISIT.md` (provisional decisions to come back to), and
+  `CLAUDE.md` (this file). Nothing else unless agreed.
+- A rule or an attribute that changes is changed in `docs/rules.md` in
+  the same commit.
 
 ## Structure
 
