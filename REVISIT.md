@@ -38,8 +38,10 @@ change it.
 
 Today: the rules have been run on macOS on Apple silicon, in Bazel's
 sandbox and outside it. Linux is meant to work the same way: its
-releases are in the table, with hashes from GitHub, and nothing in the
-rules asks which of the two it is on. It has never been tried.
+releases are in the table, and nothing in the rules asks which of the
+two it is on. Each Linux release has been downloaded through Bazel: the
+hashes match and `typst` is where the rules look for it. No document
+has been compiled there.
 
 Revisit when: there is a Linux machine to run `bazel test //...` on.
 Likely answer: run the tests on both in continuous integration, and
