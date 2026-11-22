@@ -190,8 +190,9 @@ typst_toolchain(name, typst, version)
 | `version` | String | required | Its version, as in `0.15.1`. |
 
 Wrap it in a `toolchain()` of type `@rules_typst//typst:toolchain_type`
-and register that ahead of the downloaded ones. Rules read `typst`, the
-executable, and `version` from the toolchain.
+and register that in the root module, whose toolchains come ahead of the
+downloaded ones. The extension still wants a `typst.toolchain` line.
+Rules read `typst`, the executable, and `version` from the toolchain.
 
 ## Providers
 
