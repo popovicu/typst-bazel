@@ -85,6 +85,9 @@ def _typst_document_impl(ctx):
     else:
         output = ctx.actions.declare_file("{}.{}".format(name, ctx.attr.format))
         destination = output.path
+    for mark in ["{p}", "{0p}", "{t}"]:
+        if mark in output.path and ctx.attr.format in ["png", "svg"]:
+            fail("{} has {} in its path, which Typst takes for a page number".format(ctx.label, mark))
     args = ctx.actions.args()
     args.add_all([typst, stub])
     args.add("compile")

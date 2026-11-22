@@ -92,3 +92,18 @@ typst_document(
     "none",
     "negative",
 ]]
+
+# A name Typst would read as the place for a page number.
+typst_document(
+    name = "page_{p}",
+    format = "png",
+    main = "page.typ",
+    tags = ["manual"],
+)
+
+fails_test(
+    name = "page_number_in_name_test",
+    size = "small",
+    message = "which Typst takes for a page number",
+    target_under_test = "page_{p}",
+)
