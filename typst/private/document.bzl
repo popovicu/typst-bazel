@@ -17,6 +17,10 @@ def _seconds(ctx):
     if [len(part) for part in parts] != [4, 2, 2] or not "".join(parts).isdigit():
         fail("date {} of {} is not a YYYY-MM-DD".format(repr(ctx.attr.date), ctx.label))
     year, month, day = [int(part) for part in parts]
+    leap = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+    lengths = [31, 29 if leap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    if year < 1970 or month not in range(1, 13) or day not in range(1, lengths[month - 1] + 1):
+        fail("date {} of {} is not a day since 1970".format(repr(ctx.attr.date), ctx.label))
 
     # Days since 1970 by counting from March 1, so that a leap day is the
     # last day of its year.
