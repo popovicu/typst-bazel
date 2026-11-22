@@ -73,7 +73,8 @@ def _typst_document_impl(ctx):
     # Bazel hands an action nothing but symlinks. So the main file is this
     # stub, on standard input.
     stub = ctx.actions.declare_file(name + ".stub.typ")
-    ctx.actions.write(stub, '#include "/{}"\n'.format(main))
+    quoted = main.replace("\\", "\\\\").replace('"', '\\"')
+    ctx.actions.write(stub, '#include "/{}"\n'.format(quoted))
 
     if ctx.attr.file_per_page and ctx.attr.format not in ["png", "svg"]:
         fail("{} is a {}, which is one file however many pages".format(ctx.label, ctx.attr.format))

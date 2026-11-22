@@ -27,3 +27,20 @@ sh_test(
     ],
     data = ["hello"],
 )
+
+# A name that has to be escaped where the rule writes it into Typst.
+typst_document(
+    name = "quoted",
+    main = 'say "hi".typ',
+)
+
+sh_test(
+    name = "quoted_test",
+    size = "small",
+    srcs = ["//tests:contains_test.sh"],
+    args = [
+        "$(rootpath quoted)",
+        "'/Title(quoted)'",
+    ],
+    data = ["quoted"],
+)
