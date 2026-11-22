@@ -32,12 +32,12 @@ and it passes `--jobs 1`.
 Not done: building the same documents with both, and looking again when
 its packages land.
 
-## A remote, and a registry
+## Continuous integration, and a registry
 
-The repository has no remote, and nothing is published. When it has
-one: say in `README.md` where the examples repository is, have that one
-get the rules by `git_override` and not by a path, and run the tests of
-both on Linux and macOS for every change.
+The rules and the examples are on GitHub, and no registry has the rules.
+Still to do: run the tests of both on Linux and macOS for every change,
+and publish the rules to a registry so that a module can name a version
+and not a commit.
 
 ## More Typst releases
 
