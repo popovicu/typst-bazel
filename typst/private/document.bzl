@@ -105,6 +105,8 @@ def _typst_document_impl(ctx):
     if ctx.attr.format == "html":
         # Typst calls its HTML unfinished, and says so on every build.
         args.add("--features", "html")
+    if ctx.attr.ppi < 1:
+        fail("ppi {} of {} is not a number of pixels".format(ctx.attr.ppi, ctx.label))
     if ctx.attr.format == "png":
         args.add("--ppi", str(ctx.attr.ppi))
     args.add("-")

@@ -25,7 +25,7 @@ Compiles one document. `bazel build` of the target writes
 | `deps` | List of labels | `[]` | `typst_library` targets whose files the document reads, and `typst_package` targets it imports. |
 | `format` | String | `"pdf"` | `"pdf"`, `"html"`, `"svg"` or `"png"`. |
 | `file_per_page` | Boolean | `False` | For `"png"` and `"svg"`: write a file of each page into `<name>.pages`, named by page number and padded so they sort (`1.png`, or `01.png` of twelve). An error with the other formats. |
-| `ppi` | Integer | `144` | Pixels per inch of a PNG. |
+| `ppi` | Integer | `144` | Pixels per inch of a PNG, at least 1. |
 | `inputs` | Dictionary of strings | `{}` | What the document reads as `sys.inputs`. A key cannot contain `=`. |
 | `date` | String | `"1970-01-01"` | The day the document says it was made, as `YYYY-MM-DD`: the creation date in a PDF, and `datetime.today()`. A day that is not on the calendar, or is before 1970, is an error. |
 | `fonts` | List of labels | `[]` | Font files (`.ttf`, `.otf`, `.ttc`, `.otc`) the document may use, from any repository. |

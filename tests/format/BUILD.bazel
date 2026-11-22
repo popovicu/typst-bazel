@@ -1,4 +1,5 @@
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//tests:fails_test.bzl", "fails_test")
 load("//typst:defs.bzl", "typst_document")
 
 # Each format, and something only a file of that format contains.
@@ -69,4 +70,25 @@ typst_document(
 ) for format in [
     "png",
     "svg",
+]]
+
+[typst_document(
+    name = "ppi_%s" % name,
+    format = "png",
+    main = "page.typ",
+    ppi = ppi,
+    tags = ["manual"],
+) for name, ppi in [
+    ("none", 0),
+    ("negative", -5),
+]]
+
+[fails_test(
+    name = "ppi_%s_test" % name,
+    size = "small",
+    message = "is not a number of pixels",
+    target_under_test = "ppi_" + name,
+) for name in [
+    "none",
+    "negative",
 ]]
