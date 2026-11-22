@@ -23,10 +23,27 @@ the document's fonts and packages.
 ## Comparing with the rules in the registry
 
 The Bazel Central Registry has a `rules_typst` already, from
-`periareon/rules_typst`. Once these rules do what we want of them, set
-the two side by side: what each can build, what each needs on the
-machine and in the build, how each pins Typst and packages, and how
-they behave on the same documents.
+`periareon/rules_typst`. From reading its 0.3.0: it builds PDF only,
+from one rule with no fonts, inputs, libraries or packages, and runs
+Typst through a Rust program, which puts `rules_rust` in every build.
+It is ahead in two things, both below: it offers twenty Typst releases,
+and it passes `--jobs 1`.
+
+Not done: building the same documents with both, and looking again when
+its packages land.
+
+## A remote, and a registry
+
+The repository has no remote, and nothing is published. When it has
+one: say in `README.md` where the examples repository is, have that one
+get the rules by `git_override` and not by a path, and run the tests of
+both on Linux and macOS for every change.
+
+## More Typst releases
+
+`typst/private/versions.bzl` has 0.15.1 only, written by hand from
+GitHub's release page. A script that writes the table for any release
+would let older documents keep the Typst they were written for.
 
 # Provisional decisions
 

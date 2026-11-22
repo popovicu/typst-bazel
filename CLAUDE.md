@@ -48,6 +48,33 @@ Read `README.md` first.
 - After cloning, turn the commit-size hook on:
   `git config core.hooksPath tools/hooks`.
 
+## The examples repository
+
+`../typst-bazel-examples` uses these rules as another module would,
+through a path override to this checkout. After a change to a rule or to
+the extension, run `bazel test //...` there too. A problem it finds is
+fixed here, not worked around there.
+
+## Trying what the tests cannot reach
+
+What the extension downloads, and how several modules combine, cannot be
+tested from inside `//tests`. These are tried by hand:
+
+- Another module: a scratch directory whose `MODULE.bazel` has a
+  `local_path_override` to this checkout. `house/` in the examples
+  repository is a module that is depended on and has packages.
+- Packages Typst Universe does not have: make `name-1.0.0.tar.gz`
+  archives with the files at the top, serve the directory with
+  `python3 -m http.server`, and give Bazel a `--downloader_config` file
+  saying `rewrite packages.typst.org/preview/(zz-.*)
+  http://127.0.0.1:PORT/$1`, on one line.
+- A download that fails: the same flag, rewriting to `127.0.0.1:1`.
+- Outside the sandbox: `--spawn_strategy=local`.
+
+Bazel keeps a failure of the module extension until its server
+restarts, whatever changed outside the files it watches: run
+`bazel shutdown` between tries.
+
 ## AI-written
 
 This repository is written by AI, and `README.md` says so. Check what a
