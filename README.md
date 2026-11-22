@@ -258,6 +258,10 @@ gives a browser headings and paragraphs where a page gets columns.
 bazel build //examples/resume:all
 ```
 
+[typst-bazel-examples](https://github.com/popovicu/typst-bazel-examples)
+uses the rules as another module would: it gets them from GitHub, and
+depends on a module of its own that offers a package.
+
 ## Working on the rules
 
 ```bash
