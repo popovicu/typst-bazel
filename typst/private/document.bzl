@@ -35,28 +35,23 @@ def _typst_document_impl(ctx):
 
     # The project root: every file at its path in the repository, sources
     # and generated files alike, because Typst reads from one tree only.
-    staged = {}
+    sources = {}
     libraries = [dep[TypstLibraryInfo] for dep in ctx.attr.deps if TypstLibraryInfo in dep]
     for file in depset([ctx.file.main] + ctx.files.srcs, transitive = [library.files for library in libraries]).to_list():
         path = _root_path(ctx, file)
-
-        # A directory is what a document with a file per page writes.
-        declare = ctx.actions.declare_directory if file.is_directory else ctx.actions.declare_file
-        staged[path] = declare("{}.root/{}".format(name, path))
-        ctx.actions.symlink(output = staged[path], target_file = file)
+        if path in sources:
+            fail("{} has two files at {}".format(ctx.label, path))
+        sources[path] = file
     main = _root_path(ctx, ctx.file.main)
-    root = staged[main].path.removesuffix("/" + main)
-    beside = root.removesuffix(".root")
 
     # Fonts get a tree too, so that Typst finds these and no others.
-    fonts = []
-    for file in depset(
-        ctx.files.fonts,
-        transitive = [library.fonts for library in libraries],
-    ).to_list():
-        path = "{}.fonts/{}".format(name, file.short_path.removeprefix("../"))
-        fonts.append(ctx.actions.declare_file(path))
-        ctx.actions.symlink(output = fonts[-1], target_file = file)
+    fonts = {
+        file.short_path.removeprefix("../"): file
+        for file in depset(
+            ctx.files.fonts,
+            transitive = [library.fonts for library in libraries],
+        ).to_list()
+    }
 
     # And packages, where Typst looks for them: namespace/name/version.
     packages = {}
@@ -69,13 +64,26 @@ def _typst_document_impl(ctx):
             path = "{}/{}".format(package.spec, file.short_path.removeprefix(package.prefix))
             if path in packages:
                 fail("{} gets @{} from two targets".format(ctx.label, package.spec))
-            packages[path] = ctx.actions.declare_file("{}.packages/{}".format(name, path))
-            ctx.actions.symlink(output = packages[path], target_file = file)
+            packages[path] = file
+
+    # Each tree is named for the paths in it. Outside a sandbox Typst sees
+    # whatever earlier builds left in a directory, and a directory with
+    # another name is one they left nothing in.
+    trees = {"root": sources, "fonts": fonts, "packages": packages}
+    key = "%x" % (hash(repr([sorted(tree) for tree in trees.values()])) % 0x100000000)
+    staged = []
+    for kind, files in trees.items():
+        for path, file in files.items():
+            # A directory is what a document with a file per page writes.
+            declare = ctx.actions.declare_directory if file.is_directory else ctx.actions.declare_file
+            staged.append(declare("{}.{}.{}/{}".format(name, key, kind, path)))
+            ctx.actions.symlink(output = staged[-1], target_file = file)
 
     # Typst refuses a main file that is a symlink out of the root, and
     # Bazel hands an action nothing but symlinks. So the main file is this
     # stub, on standard input.
     stub = ctx.actions.declare_file(name + ".stub.typ")
+    beside = "{}.{}".format(stub.path.removesuffix(".stub.typ"), key)
     quoted = main.replace("\\", "\\\\").replace('"', '\\"')
     ctx.actions.write(stub, '#include "/{}"\n'.format(quoted))
 
@@ -95,7 +103,7 @@ def _typst_document_impl(ctx):
     args = ctx.actions.args()
     args.add_all([typst, stub])
     args.add("compile")
-    args.add("--root", root)
+    args.add("--root", beside + ".root")
     args.add("--ignore-system-fonts")
     args.add("--creation-timestamp", str(_seconds(ctx)))
 
@@ -121,7 +129,7 @@ def _typst_document_impl(ctx):
     ctx.actions.run_shell(
         command = 'typst="$1"; stub="$2"; shift 2; exec "$typst" "$@" < "$stub"',
         arguments = [args],
-        inputs = staged.values() + fonts + packages.values() + [stub],
+        inputs = staged + [stub],
         tools = [typst],
         outputs = [output],
         mnemonic = "TypstCompile",

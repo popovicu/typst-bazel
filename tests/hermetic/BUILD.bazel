@@ -29,6 +29,8 @@ typst_document(
 compile_test(
     name = "compile_test",
     size = "small",
+    # The pages are made of what the plain document is.
+    kinds = 3,
     documents = [
         "font",
         "package",

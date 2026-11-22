@@ -58,9 +58,9 @@ source) to two attributes.
 Typst reads from one directory, the project root: a path is relative to
 the file that names it, or absolute from the root, and nothing outside
 the root can be read. Bazel keeps sources and generated files in
-different trees. So `typst_document` builds a root of its own,
-`<name>.root`, with each input symlinked at the path it has in the
-repository, and compiles there.
+different trees. So `typst_document` builds a root of its own, with each
+input symlinked at the path it has in the repository, and compiles
+there.
 
 Why: the document reads generated files exactly as it reads sources, and
 the paths it writes are the ones that work when Typst is run by hand at
@@ -68,7 +68,11 @@ the top of the repository, for files that are checked in.
 
 It also keeps the build honest without a sandbox: the tree holds the
 declared inputs and nothing else, so an undeclared file is not found
-under any execution strategy.
+under any execution strategy. For that the tree's name carries a hash of
+the paths in it, as in `<name>.6583a1e1.root`. Without a sandbox, a
+directory keeps the symlinks of earlier builds, so a file taken out of
+the rule would still be found in a tree that kept its name. Fonts and
+packages get trees named the same way.
 
 What it costs: one symlink action per input, which run no process. Files
 of another repository have no path in this one and are refused; packages
