@@ -101,3 +101,117 @@ A document can have one target for each `namespace/name/version`. Two
 that claim the same one are an error.
 
 **Providers returned:** `DefaultInfo`, `TypstPackageInfo`
+
+## The module extension
+
+```starlark
+typst = use_extension("@rules_typst//typst:extensions.bzl", "typst")
+```
+
+### typst.toolchain
+
+```starlark
+typst.toolchain(version)
+```
+
+Chooses the Typst release documents compile with. `version` is one of
+those in `typst/private/versions.bzl`. Some module must choose one. When
+several do, the root module's choice wins.
+
+The release is downloaded for the machine that runs the build, the first
+time something compiles, and checked against a SHA-256. There are
+releases for Linux (x86-64, ARM64, ARMv7, RISC-V) and macOS (x86-64,
+ARM64).
+
+### typst.package
+
+```starlark
+typst.package(name, version)
+```
+
+Asks for a package of Typst Universe. `@preview/name:version` in Typst
+is then the label `@preview//name:version`.
+
+### typst.lock
+
+```starlark
+typst.lock(file)
+```
+
+The label of the JSON file that pins the module's packages. A module
+with a `typst.package` needs exactly one. The file need not exist yet:
+`bazel run @preview//:lock` writes it.
+
+For each package asked for, and each one those import, the file holds
+the SHA-256 of its archive and the packages it imports:
+
+```json
+{
+    "oxifmt:1.0.0": {
+        "deps": [],
+        "sha256": "7d17a1fc..."
+    }
+}
+```
+
+### The `@preview` repository
+
+Brought in with `use_repo(typst, "preview")`.
+
+| Target | What it is |
+|--------|------------|
+| `@preview//name:version` | A `typst_package`, with the packages it imports. Visible only if a `typst.package` asks for it by name. |
+| `@preview//:lock` | Run it to write the root module's lock file: it pins what the file lacks, keeps the hashes it has, and drops what nothing asks for. |
+| `@preview//:typst.lock.json` | What that would write, to compare with the file checked in. |
+
+While the root module's lock file lacks a package, no package builds,
+and the error names the ones to pin. A module that is not the root must
+have every package in its lock file already.
+
+## Running Typst
+
+```bash
+bazel run @rules_typst//typst -- fonts
+```
+
+`@rules_typst//typst` is the chosen release, as an executable.
+
+## Bringing your own Typst
+
+```starlark
+load("@rules_typst//typst:toolchain.bzl", "typst_toolchain")
+
+typst_toolchain(name, typst, version)
+```
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `typst` | Label | required | The `typst` executable. |
+| `version` | String | required | Its version, as in `0.15.1`. |
+
+Wrap it in a `toolchain()` of type `@rules_typst//typst:toolchain_type`
+and register that ahead of the downloaded ones. Rules read `typst`, the
+executable, and `version` from the toolchain.
+
+## Providers
+
+### TypstLibraryInfo
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `files` | depset of File | The library's files, and those of the libraries it depends on. |
+| `fonts` | depset of File | The font files those need. |
+| `packages` | depset of struct | The packages those import, as in `TypstPackageInfo`. |
+
+### TypstPackageInfo
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `packages` | depset of struct | The package and those it imports. |
+
+Each struct has `spec`, the directory Typst looks for the package in, as
+`namespace/name/version`; `files`, a depset of File; and `prefix`, what
+to take off a file's `short_path` for its path inside the package.
+
+A rule that returns one of these can stand where a library or a package
+does: a rule that generates Typst sources, say.
