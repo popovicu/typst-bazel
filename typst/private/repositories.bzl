@@ -47,7 +47,26 @@ toolchain(
 )
 """
 
+_UNCHOSEN = """\
+load("{bzl}", "unchosen_typst")
+
+unchosen_typst(name = "unchosen")
+
+toolchain(
+    name = "unchosen_toolchain",
+    toolchain = ":unchosen",
+    toolchain_type = "{toolchain_type}",
+)
+"""
+
 def _typst_toolchains_impl(rctx):
+    if not rctx.attr.releases:
+        rctx.file("BUILD.bazel", _UNCHOSEN.format(
+            bzl = Label(":resolved.bzl"),
+            toolchain_type = Label("//typst:toolchain_type"),
+        ))
+        return
+
     # Naming a release here does not fetch it: Bazel downloads only the
     # one whose constraints match the machine running the build.
     #
@@ -69,7 +88,6 @@ typst_toolchains = repository_rule(
     attrs = {
         "releases": attr.string_dict(
             doc = "Repository name of each release, to its target triple.",
-            mandatory = True,
         ),
     },
 )

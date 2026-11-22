@@ -1,4 +1,6 @@
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//tests:fails_test.bzl", "fails_test")
+load("//typst/private:resolved.bzl", "unchosen_typst")
 
 sh_test(
     name = "version_test",
@@ -6,4 +8,17 @@ sh_test(
     srcs = ["version_test.sh"],
     args = ["$(rootpath //typst)"],
     data = ["//typst"],
+)
+
+# What stands in for Typst when no module chose a version.
+unchosen_typst(
+    name = "unchosen",
+    tags = ["manual"],
+)
+
+fails_test(
+    name = "unchosen_test",
+    size = "small",
+    message = "No Typst version is chosen",
+    target_under_test = "unchosen",
 )

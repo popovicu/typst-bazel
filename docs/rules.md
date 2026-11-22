@@ -115,8 +115,9 @@ typst.toolchain(version)
 ```
 
 Chooses the Typst release documents compile with. `version` is one of
-those in `typst/private/versions.bzl`. Some module must choose one. When
-several do, the root module's choice wins.
+those in `typst/private/versions.bzl`. When several modules choose, the
+root module's first choice wins. When none does, a build that compiles a
+document fails and says so; any other build is not affected.
 
 The release is downloaded for the machine that runs the build, the first
 time something compiles, and checked against a SHA-256. There are

@@ -11,3 +11,12 @@ resolved_typst = rule(
     executable = True,
     toolchains = ["//typst:toolchain_type"],
 )
+
+def _unchosen_typst_impl(ctx):
+    fail("No Typst version is chosen. Add typst.toolchain(version = ...) to MODULE.bazel.")
+
+unchosen_typst = rule(
+    implementation = _unchosen_typst_impl,
+    doc = "The toolchain when no module chose a version. It fails, but " +
+          "only for a build that compiles a document.",
+)

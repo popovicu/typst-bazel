@@ -13,8 +13,9 @@ def _typst_impl(mctx):
                 fail("Typst {} is not one of {}".format(tag.version, VERSIONS.keys()))
             if tag.version not in versions:
                 versions.append(tag.version)
-    if not versions:
-        fail("No Typst version is chosen. Add typst.toolchain(version = ...) to MODULE.bazel.")
+
+    # No version at all is an error only for a build that compiles a
+    # document: a module that merely has this one below it still builds.
 
     releases = {}
     for version in versions:
